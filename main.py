@@ -1,9 +1,11 @@
 import cv2
-import numpy as np
+import time
 import mediapipe as mp
 from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 from tools import draw_hand_landmarks
+# import uinput
+# oir use pynput
 
 cam = cv2.VideoCapture(0)
 
@@ -13,12 +15,17 @@ option = vision.HandLandmarkerOptions(
     num_hands=2
 )
 detector = vision.HandLandmarker.create_from_options(option)
-
+pTime = 0
 while True:
     success, frame = cam.read()
 
+    cTime = time.time()
+    fps = round(1/(cTime-pTime))
+    pTime = cTime
+    img_with_fps = cv2.putText(frame,str(fps),(20,40),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 100, 255), 2)
+
     # cv2.imshow("img", frame)
-    rgb_img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    rgb_img = cv2.cvtColor(img_with_fps, cv2.COLOR_BGR2RGB)
     rgb_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_img)
 
     result = detector.detect(rgb_frame)
