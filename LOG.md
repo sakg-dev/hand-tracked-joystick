@@ -16,3 +16,9 @@ but for now I am making for **Minecraft**:
 
 There will also be a rest pose that keeps player in rest..
 We might use other hand for config like for pause, for camera move change and other configs
+
+------------
+
+So after deciding controls, its time to implement! First task is to assign a rest pose of hand.
+For this I used off hand: if it shows thumb up, the program will check, if main hand is present, if no so rest pose is blank or else it will check if all 21 landmarks of main hand is present, if yes, it will set the landmark of main hand as rest pose and will show in red.
+I chose red color to differentiate from my live hands.

@@ -4,4 +4,4 @@ Imagine you can control any game through your floating hand without touching key
 
 Tasks:
 - [x] Decide controls
-- [ ] Set rest pose
+- [x] Set rest pose

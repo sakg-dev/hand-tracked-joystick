@@ -1,20 +1,21 @@
 import cv2
 import time
 import mediapipe as mp
-from mediapipe.tasks.python import vision
-from mediapipe.tasks import python
-from tools import draw_hand_landmarks
+from tools import draw_hand_landmarks, load_gesture_recognizer
 # import uinput
-# oir use pynput
+# or use pynput
 
 cam = cv2.VideoCapture(0)
 
-base_options = python.BaseOptions(model_asset_path="hand_landmarker.task")
-option = vision.HandLandmarkerOptions(
-    base_options=base_options,
-    num_hands=2
-)
-detector = vision.HandLandmarker.create_from_options(option)
+# bundles both gesture recognizer and hand landmark tracker
+gesture_recognizer = load_gesture_recognizer()
+
+MAIN_HAND = "Right"
+OFF_HAND = "Left"
+LDM_SET_GESTURE = "Thumb_Up"
+
+rest_pose_ldms = []
+
 pTime = 0
 while True:
     success, frame = cam.read()
@@ -22,19 +23,30 @@ while True:
     cTime = time.time()
     fps = round(1/(cTime-pTime))
     pTime = cTime
-    img_with_fps = cv2.putText(frame,str(fps),(20,40),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 100, 255), 2)
+    img_with_fps = cv2.putText(frame, str(
+        fps), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 100, 255), 2)
 
-    # cv2.imshow("img", frame)
     rgb_img = cv2.cvtColor(img_with_fps, cv2.COLOR_BGR2RGB)
     rgb_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_img)
 
-    result = detector.detect(rgb_frame)
+    r = gesture_recognizer.recognize(rgb_frame)
+    gestures, handedness, hlm, hwlm = r.gestures, r.handedness, r.hand_landmarks, r.hand_world_landmarks
 
-    result_rgb_img = draw_hand_landmarks(rgb_frame.numpy_view(), result)
+    # glitches and shows wrong arr when new item is added or removed even after adding check of score hence need some kind of cooldown ig!
+    # if handedness[0].score>0.95 else False
+    handedness = list(map(lambda handedness: handedness[0].category_name, handedness))
 
-    final_bgr_img = cv2.cvtColor(result_rgb_img,cv2.COLOR_RGB2BGR)
+    if OFF_HAND in handedness:
+        gesture = gestures[handedness.index(OFF_HAND)][0].category_name
+        if(gesture==LDM_SET_GESTURE):
+            try:
+                rest_pose_ldms = hlm[handedness.index(MAIN_HAND)] # Main hand ldmks
+            except:
+                rest_pose_ldms = []
+                print("Main hand not found")
 
-    cv2.imshow("img", final_bgr_img)
+    result_img = draw_hand_landmarks(rgb_frame.numpy_view(), hlm, rest_pose_ldms)
+    cv2.imshow("img", result_img)
 
     if cv2.waitKey(1) & 0xFF == 27:
         break
