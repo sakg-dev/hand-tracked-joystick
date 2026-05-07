@@ -5,7 +5,7 @@ Imagine you can control any game through your floating hand without touching key
 Tasks:
 - [x] Decide controls
 - [x] Set rest pose
-- [ ] Measure the ldm of hand with rest pose for WASD
+- [x] Measure the diff b/w ldf of rest pose and current hand for WASD
 - [ ] Press WASD according to LDMs
 
 

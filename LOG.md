@@ -30,3 +30,7 @@ It would be interesting - So my target was to measure the diff b/w rest_pose_han
 For this i thought to find center of 0 - 12 and 4 - 20 then find the center of those both. I spent so much time to find the center and even did but didn't have idea on how to find center of those center point.. But soon i realized if we draw an imaginery line from 0-12 and 4-20, the intersection point will be center and when i did, it worked! but after spending hours, i realized 9 was close to the center, and my solution might be bad suppose if hand if lil bend but 9 will alays be near center and will stay at same place, hence i wasted my day
 
 I also learned that sometime perfect is not what we need rather we need something that can work fast and reliably
+
+-----------
+
+It was pretty ez, i just had to find the diff between rest pose and crrenty hand ldm's. Though for threshold i was running my mind too much but it was simple

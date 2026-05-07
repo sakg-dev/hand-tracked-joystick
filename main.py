@@ -1,7 +1,7 @@
 import cv2
 import time
 import mediapipe as mp
-from tools import draw_hand_landmarks, load_gesture_recognizer
+from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold
 from copy import deepcopy
 # import uinput
 # or use pynput
@@ -14,6 +14,7 @@ gesture_recognizer = load_gesture_recognizer()
 MAIN_HAND = "Right"
 OFF_HAND = "Left"
 LDM_SET_GESTURE = "Thumb_Up"
+THRESHOLD = 0.05
 
 rest_pose_ldms = []
 
@@ -49,7 +50,7 @@ while True:
                 rest_pose_ldms = []
                 print("Main hand not found")
 
-    # For finding difference b/w rest and current ldm and do actions
+    # For finding difference b/w rest and current ldms and do actions
     diff = None
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         main_hand_ldm = hlm[handedness.index(MAIN_HAND)]
@@ -57,8 +58,13 @@ while True:
         rest_pose_center = rest_pose_ldms[9]
         main_hand_center = main_hand_ldm[9]
 
-        # print(f"{rest_pose_center.z}\n\n\n{main_hand_center.z}",end="\n\n\n\n\n\n")
+        dx = rest_pose_center.x - main_hand_center.x
+        dy = rest_pose_center.y - main_hand_center.y
 
+        if is_above_threshold(THRESHOLD, dx):
+            print("X")
+        if is_above_threshold(THRESHOLD,dy):
+            print("Y")
 
     result_img = draw_hand_landmarks(
         rgb_frame.numpy_view(), hlm, rest_pose_ldms)
