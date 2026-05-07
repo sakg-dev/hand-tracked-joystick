@@ -1,7 +1,7 @@
 import cv2
 import time
 import mediapipe as mp
-from tools import draw_hand_landmarks, load_gesture_recognizer, line_intersection
+from tools import draw_hand_landmarks, load_gesture_recognizer
 from copy import deepcopy
 # import uinput
 # or use pynput
@@ -53,31 +53,15 @@ while True:
     diff = None
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         main_hand_ldm = hlm[handedness.index(MAIN_HAND)]
-        # diff = find_diff_between_ldms(rest_pose_ldms, main_hand_ldm)
-        mhl = main_hand_ldm
-        
-        xa1 = mhl[12].x
-        ya1 = mhl[12].y
 
-        xa2 = mhl[0].x
-        ya2 = mhl[0].y
+        rest_pose_center = rest_pose_ldms[9]
+        main_hand_center = main_hand_ldm[9]
 
-        xb1 = mhl[4].x
-        yb1 = mhl[4].y
+        # print(f"{rest_pose_center.z}\n\n\n{main_hand_center.z}",end="\n\n\n\n\n\n")
 
-        xb2 = mhl[20].x
-        yb2 = mhl[20].y
-        #line_intersection
-        x, y = line_intersection(
-            ((xa1, ya1), (xa2, ya2)),
-            ((xb1, yb1), (xb2, yb2))
-        )
-        diff = deepcopy(mhl[0])
-        diff.x = x
-        diff.y = y
 
     result_img = draw_hand_landmarks(
-        rgb_frame.numpy_view(), hlm, rest_pose_ldms, diff)
+        rgb_frame.numpy_view(), hlm, rest_pose_ldms)
     cv2.imshow("img", result_img)
 
     if cv2.waitKey(1) & 0xFF == 27:
