@@ -33,4 +33,10 @@ I also learned that sometime perfect is not what we need rather we need somethin
 
 -----------
 
-It was pretty ez, i just had to find the diff between rest pose and crrenty hand ldm's. Though for threshold i was running my mind too much but it was simple
+It was pretty ez, i just had to find the diff between rest pose and current hand ldm's. Though for threshold i was running my mind too much but it was simple
+
+-----------
+
+python-uinput was already downloaded, just had to implement as shown in docs. Ran into some permission and module err but was working good at last. RIght now on every frame, it is pressing and releasing the key but eaglercraft(minecraft clone on browser) is not accepting it, afaik it might be either due to it is too fast that eaglercraft can't handle or eaglercraft is blocking it. 
+
+So next time i may wanna try another module or trynna read more docs in it and see how i can keep it press until another key is not popped..
