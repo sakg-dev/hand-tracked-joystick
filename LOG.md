@@ -40,3 +40,16 @@ It was pretty ez, i just had to find the diff between rest pose and current hand
 python-uinput was already downloaded, just had to implement as shown in docs. Ran into some permission and module err but was working good at last. RIght now on every frame, it is pressing and releasing the key but eaglercraft(minecraft clone on browser) is not accepting it, afaik it might be either due to it is too fast that eaglercraft can't handle or eaglercraft is blocking it. 
 
 So next time i may wanna try another module or trynna read more docs in it and see how i can keep it press until another key is not popped..
+
+----------
+
+So as i thought, eaglercraft was looking for press and release key instead of just click. At first i tried looking for something like that in python-uinput but there wasn't ig, so i moved to pynput which was surprisingly easier to work with as i didn't have to load uinput as well as it does the same thing press and release.
+
+Then soon i implemented it and i was successfully able to do left, right, jump and sneak.
+
+But there are some known issues and tasks:
+ - The keys and mouse(input devices) doesn't work properly after i run pynput idk why, need to restart computer everytime i run it..
+ - Rn it supports one key at a time only but we need combinations as well..
+ - When i do right, it happens left and vice versa, i think i should flip the image 180 deg vertically to make it right, we'll see it later..
+
+But b4 solving problems blindly, i should update readme with plans and everything and focus on what will make it work.

@@ -6,8 +6,8 @@ Tasks:
 - [x] Decide controls
 - [x] Set rest pose
 - [x] Measure the diff b/w ldf of rest pose and current hand for WASD
-- [ ] Press WASD according to LDMs
+- [x] Press Jump, Sneak, Right and Left according to LDMs
 
 
 Controls:
-- WSAD - Hand forward, backward, left, right
+- Space, Shift, A and D - Jump, Sneak, left, right
