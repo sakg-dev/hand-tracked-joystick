@@ -56,3 +56,8 @@ def load_gesture_recognizer():
 def is_above_threshold(threshold, val):
     # ans = val > (-abs(threshold) if val < 0 else abs(threshold))
     return abs(val) > threshold
+
+def quit_and_release(current_keys, keyboard):
+    for key in current_keys:
+        keyboard.release(key)
+    return

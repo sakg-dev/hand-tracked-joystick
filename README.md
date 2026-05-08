@@ -9,7 +9,7 @@ Tasks:
 - [x] Press Jump, Sneak, Right and Left according to LDMs
 - [x] Measure the depth difference b/w rest and current hand.
 - [x] Do W for forward and S for backward hand
-- [x] Make Window that sticks while you play game.. (done partly)
+- [x] Make Window that sticks while you play game..
 - [ ] Implement Right and left click
 - [ ] Implement Sprint
 - [ ] Make it confortable and kind of accurate and less oopsy

@@ -84,6 +84,14 @@ But my image was too big, at first had to make it smaller.
 
 After scaling the image, i found there is a toolbar which is acquiring too much space ut completely useless but after asking at stackoverflow, one man answered and used namedWindow: autoresize | gui_normal
 
-BUt even now having to pin it manually and send it to correct desktop..
+But even now having to pin it manually and send it to correct desktop..
 I also tried to play game: not that correct ngl, i tried playing bedwar(just wasd and jump/sneak) even though whie waking on bridge, just fell of lol. 
 Lets firstly implment rest of the controls then make it accurate and better
+
+-----------
+
+So now during making click gesture, i realized, how much ambiguous it will be with W and S, bcz when i try to connect thumb and index finger or middle finger, the landmark that triggers w and s also moves.. Which is why we needed to move to a more stable way. i found we shouldn't use fingers' landmark at all, we should use palm's.
+So at first i tried to do the bottom of middle finger(9) and wrist(0) for w and s. but when i was trynna do right click gesture(not yet implmented), it was affecting even 9.. then i moved to wrist and pinky finger as they were most unaffected(we can always change it later when needed)
+
+Also i am now releasing current keys before quitting so as to i will not need to get it to be in rest pose before making it stop working. AM using thumb down from off hand as gesture to quit..
+

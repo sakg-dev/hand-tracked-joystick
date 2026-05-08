@@ -2,7 +2,7 @@ import cv2
 import time
 import numpy as np
 import mediapipe as mp
-from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold
+from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold, quit_and_release
 from pynput.keyboard import Key, Controller
 
 cam = cv2.VideoCapture(0)
@@ -29,6 +29,7 @@ prev_keys = []
 
 while True:
     success, frame = cam.read()
+    current_keys = []
 
     cTime = time.time()
     fps = round(1/(cTime-pTime))
@@ -59,14 +60,13 @@ while True:
                 rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            quit()
+            quit_and_release(current_keys,keyboard)
             break
 
     # For finding difference b/w rest and current ldms and do actions
     diff = None
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         main_hand_ldm = hlm[handedness.index(MAIN_HAND)]
-        current_keys = []
 
         rest_pose_center = rest_pose_ldms[9]
         main_hand_center = main_hand_ldm[9]
@@ -87,9 +87,9 @@ while True:
         # rest_pose_diameter = rest_pose_ldms[20].x - rest_pose_ldms[4].x
         # main_hand_diameter = main_hand_ldm[20].x - main_hand_ldm[4].x
 
-        # Vertical (0 and 12)
-        rest_pose_diameter = rest_pose_ldms[0].y - rest_pose_ldms[12].y
-        main_hand_diameter = main_hand_ldm[0].y - main_hand_ldm[12].y
+        # Vertical (0 and 9)
+        rest_pose_diameter = rest_pose_ldms[0].y - rest_pose_ldms[17].y
+        main_hand_diameter = main_hand_ldm[0].y - main_hand_ldm[17].y
         dz = rest_pose_diameter - main_hand_diameter
 
         # print(dz) # negative = forward, positive = backward
@@ -119,7 +119,7 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == 27:
         # later here clear everything before breaking the loop :)
-        quit()
+        quit_and_release(current_keys,keyboard)
         break
 
 cam.release()
