@@ -21,7 +21,7 @@ rest_pose_ldms = []
 
 pTime = 0
 
-prev_key = ""
+prev_keys = []
 
 while True:
     success, frame = cam.read()
@@ -65,39 +65,28 @@ while True:
         dx = rest_pose_center.x - main_hand_center.x
         dy = rest_pose_center.y - main_hand_center.y
 
-        current_key = ""
+        current_keys = []
         if is_above_threshold(THRESHOLD, dx):
             if (dx > 0):
-                # print("+X") # left
-                print("A")
-                current_key = "A"
+                current_keys.append("A")
             else:
-                # print("-X") # right
-                print("D")
-                current_key = "D"
+                current_keys.append("D")
         if is_above_threshold(THRESHOLD, dy):
             if (dy > 0):
-                pass
-                # print("+Y") # up
-                # print("Jump")
-                current_key = Key.space
+                current_keys.append(Key.space)
             else:
-                pass
-                # print("-Y") # down
-                # print("Snick")
-                current_key = Key.shift
+                current_keys.append(Key.shift)
 
-        if current_key != "":
-            if (prev_key != current_key):
-                if prev_key != "":
-                    print(f"Released {prev_key}")
-                    keyboard.release(prev_key)
-                print(f"Pressed {current_key}")
-                keyboard.press(current_key)
-                prev_key = current_key
-        else:
-            if (prev_key != ""):
-                keyboard.release(prev_key)
+        if len(prev_keys) != 0:
+            for key in list(set(prev_keys)-set(current_keys)): # release prev keys who are not in new
+                keyboard.release(key)
+
+        for key in current_keys:
+            if key not in prev_keys: # if key is new then press it or else just let it be as it is already been pressed
+                keyboard.press(key)
+
+        prev_keys = current_keys
+            
 
     result_img = draw_hand_landmarks(rgb_frame.numpy_view(), hlm, rest_pose_ldms)
     cv2.imshow("img", result_img)

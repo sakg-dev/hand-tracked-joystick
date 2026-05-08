@@ -53,3 +53,9 @@ But there are some known issues and tasks:
  - When i do right, it happens left and vice versa, i think i should flip the image 180 deg vertically to make it right, we'll see it later..
 
 But b4 solving problems blindly, i should update readme with plans and everything and focus on what will make it work.
+
+---------
+
+So now we can do combinations as well! Just had to convert key from string to list and change some relevent code.
+
+I think now i should focus on these issues: the input devices work weird after running the program and mirror

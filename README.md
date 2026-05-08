@@ -7,7 +7,10 @@ Tasks:
 - [x] Set rest pose
 - [x] Measure the diff b/w ldf of rest pose and current hand for WASD
 - [x] Press Jump, Sneak, Right and Left according to LDMs
+- [ ] Measure the depth difference b/w rest and current hand.
+- [ ] Do W for forward and S for backward hand
 
 
 Controls:
 - Space, Shift, A and D - Jump, Sneak, left, right
+- W and S: Forward and Backwars (not yet implemented)
