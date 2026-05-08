@@ -56,4 +56,3 @@ def load_gesture_recognizer():
 def is_above_threshold(threshold, val):
     # ans = val > (-abs(threshold) if val < 0 else abs(threshold))
     return abs(val) > threshold
-

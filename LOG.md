@@ -59,3 +59,11 @@ But b4 solving problems blindly, i should update readme with plans and everythin
 So now we can do combinations as well! Just had to convert key from string to list and change some relevent code.
 
 I think now i should focus on these issues: the input devices work weird after running the program and mirror
+
+---------
+
+So for quiting i saw it was occuring most of the time when i was switching window to shut it down and i guessed break was just breaking the loop not completely stopping it hence i added a gesture(thumb down in right hand) by which it will quit the program(most of the time it works but still buggy)
+
+Mirroring was also ez, i just had to flip the img horizontally using cv2.flip
+
+So now lets focus on depth! for forward and backward

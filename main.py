@@ -1,8 +1,8 @@
 import cv2
 import time
+import numpy as np
 import mediapipe as mp
 from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold
-from copy import deepcopy
 from pynput.keyboard import Key, Controller
 
 cam = cv2.VideoCapture(0)
@@ -12,9 +12,10 @@ keyboard = Controller()
 # bundles both gesture recognizer and hand landmark tracker
 gesture_recognizer = load_gesture_recognizer()
 
-MAIN_HAND = "Right"
-OFF_HAND = "Left"
+MAIN_HAND = "Left"
+OFF_HAND = "Right"
 LDM_SET_GESTURE = "Thumb_Up"
+QUIT_GESTURE = "Thumb_Down"
 THRESHOLD = 0.05
 
 rest_pose_ldms = []
@@ -29,7 +30,8 @@ while True:
     cTime = time.time()
     fps = round(1/(cTime-pTime))
     pTime = cTime
-    img_with_fps = cv2.putText(frame, str(
+    flipped_frame = cv2.flip(frame,1)
+    img_with_fps = cv2.putText(flipped_frame, str(
         fps), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 100, 255), 2)
 
     rgb_img = cv2.cvtColor(img_with_fps, cv2.COLOR_BGR2RGB)
@@ -53,6 +55,9 @@ while True:
             except:
                 rest_pose_ldms = []
                 print("Main hand not found")
+        elif gesture == QUIT_GESTURE:
+            quit()
+            break
 
     # For finding difference b/w rest and current ldms and do actions
     diff = None
@@ -93,6 +98,7 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == 27:
         # later here clear everything before breaking the loop :)
+        quit()
         break
 
 cam.release()
