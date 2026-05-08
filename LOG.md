@@ -31,17 +31,17 @@ For this i thought to find center of 0 - 12 and 4 - 20 then find the center of t
 
 I also learned that sometime perfect is not what we need rather we need something that can work fast and reliably
 
------------
+------------
 
 It was pretty ez, i just had to find the diff between rest pose and current hand ldm's. Though for threshold i was running my mind too much but it was simple
 
------------
+------------
 
 python-uinput was already downloaded, just had to implement as shown in docs. Ran into some permission and module err but was working good at last. RIght now on every frame, it is pressing and releasing the key but eaglercraft(minecraft clone on browser) is not accepting it, afaik it might be either due to it is too fast that eaglercraft can't handle or eaglercraft is blocking it. 
 
 So next time i may wanna try another module or trynna read more docs in it and see how i can keep it press until another key is not popped..
 
-----------
+------------
 
 So as i thought, eaglercraft was looking for press and release key instead of just click. At first i tried looking for something like that in python-uinput but there wasn't ig, so i moved to pynput which was surprisingly easier to work with as i didn't have to load uinput as well as it does the same thing press and release.
 
@@ -54,16 +54,25 @@ But there are some known issues and tasks:
 
 But b4 solving problems blindly, i should update readme with plans and everything and focus on what will make it work.
 
----------
+------------
 
 So now we can do combinations as well! Just had to convert key from string to list and change some relevent code.
 
 I think now i should focus on these issues: the input devices work weird after running the program and mirror
 
----------
+------------
 
 So for quiting i saw it was occuring most of the time when i was switching window to shut it down and i guessed break was just breaking the loop not completely stopping it hence i added a gesture(thumb down in right hand) by which it will quit the program(most of the time it works but still buggy)
 
 Mirroring was also ez, i just had to flip the img horizontally using cv2.flip
 
 So now lets focus on depth! for forward and backward
+
+------------
+
+This was very interesting! So since i had to know the depth diff between rest pose hand and current hand, i had many ways to find it, i might have also utilized the z axis in landmark we get but i found it not that accurate then i thought i can measure the diameter(i donno if it is right word for polygonal) horizontally or vertically and then find the difference!
+AT first i thought to use horizontal but soon realized it wouldn't be accurate as it changed dramatically if user stretches hand lil bit so decided to do vetically(0 and 12) which is much more stable.
+Then after doing the same thing as i did with A and S, i was able to to W and S!
+
+But till this point, just guessing the hand position and trynna move and see was so annoying, i wanted the cv screen on my screen while playing.
+And most of the time, the input devices are no working when i try to shut down the program without keeping it in the rest pose..

@@ -30,7 +30,7 @@ while True:
     cTime = time.time()
     fps = round(1/(cTime-pTime))
     pTime = cTime
-    flipped_frame = cv2.flip(frame,1)
+    flipped_frame = cv2.flip(frame, 1)
     img_with_fps = cv2.putText(flipped_frame, str(
         fps), (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 100, 255), 2)
 
@@ -63,14 +63,12 @@ while True:
     diff = None
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         main_hand_ldm = hlm[handedness.index(MAIN_HAND)]
+        current_keys = []
 
         rest_pose_center = rest_pose_ldms[9]
         main_hand_center = main_hand_ldm[9]
-
         dx = rest_pose_center.x - main_hand_center.x
         dy = rest_pose_center.y - main_hand_center.y
-
-        current_keys = []
         if is_above_threshold(THRESHOLD, dx):
             if (dx > 0):
                 current_keys.append("A")
@@ -82,6 +80,23 @@ while True:
             else:
                 current_keys.append(Key.shift)
 
+        # Horizontal(4 and 20)
+        # rest_pose_diameter = rest_pose_ldms[20].x - rest_pose_ldms[4].x
+        # main_hand_diameter = main_hand_ldm[20].x - main_hand_ldm[4].x
+
+        # Vertical (0 and 12)
+        rest_pose_diameter = rest_pose_ldms[0].y - rest_pose_ldms[12].y
+        main_hand_diameter = main_hand_ldm[0].y - main_hand_ldm[12].y
+        dz = rest_pose_diameter - main_hand_diameter
+
+        # print(dz) # negative = forward, positive = backward
+
+        if is_above_threshold(0.01, dz):
+            if (dz > 0):
+                current_keys.append("S")
+            else:
+                current_keys.append("W")
+
         if len(prev_keys) != 0:
             for key in list(set(prev_keys)-set(current_keys)): # release prev keys who are not in new
                 keyboard.release(key)
@@ -91,9 +106,9 @@ while True:
                 keyboard.press(key)
 
         prev_keys = current_keys
-            
 
-    result_img = draw_hand_landmarks(rgb_frame.numpy_view(), hlm, rest_pose_ldms)
+    result_img = draw_hand_landmarks(
+        rgb_frame.numpy_view(), hlm, rest_pose_ldms)
     cv2.imshow("img", result_img)
 
     if cv2.waitKey(1) & 0xFF == 27:
