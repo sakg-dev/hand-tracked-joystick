@@ -8,10 +8,10 @@ The very first task I have to do now is to decide the controls. I have to make i
 I think controls should be customizeable 
 but for now I am making for **Minecraft**:
 - WSAD - Hand forward, backward, left, right
-- Left Click - Pinch thumb and index finger
-- Rigt Click - Pinch thumb and middle finger
 - Jump - Hand up
 - Shift - Hand down
+- Left Click - Pinch thumb and index finger
+- Rigt Click - Pinch thumb and middle finger
 - Sprint - Hand Forward then rest then farward (under 1 sec)
 
 There will also be a rest pose that keeps player in rest..
@@ -76,3 +76,14 @@ Then after doing the same thing as i did with A and S, i was able to to W and S!
 
 But till this point, just guessing the hand position and trynna move and see was so annoying, i wanted the cv screen on my screen while playing.
 And most of the time, the input devices are no working when i try to shut down the program without keeping it in the rest pose..
+
+-----------
+
+After doing 5 min of research i found a very imple way to pin the window, actually it is built in, in most of te linux just right click on title and click "Always on top". 
+But my image was too big, at first had to make it smaller.
+
+After scaling the image, i found there is a toolbar which is acquiring too much space ut completely useless but after asking at stackoverflow, one man answered and used namedWindow: autoresize | gui_normal
+
+BUt even now having to pin it manually and send it to correct desktop..
+I also tried to play game: not that correct ngl, i tried playing bedwar(just wasd and jump/sneak) even though whie waking on bridge, just fell of lol. 
+Lets firstly implment rest of the controls then make it accurate and better

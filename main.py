@@ -16,7 +16,10 @@ MAIN_HAND = "Left"
 OFF_HAND = "Right"
 LDM_SET_GESTURE = "Thumb_Up"
 QUIT_GESTURE = "Thumb_Down"
+WIN_NAME = "gameee"
 THRESHOLD = 0.05
+RESIZE_FX = 0.35
+RESIZE_FY = 0.35
 
 rest_pose_ldms = []
 
@@ -98,18 +101,21 @@ while True:
                 current_keys.append("W")
 
         if len(prev_keys) != 0:
-            for key in list(set(prev_keys)-set(current_keys)): # release prev keys who are not in new
+            # release prev keys who are not in new
+            for key in list(set(prev_keys)-set(current_keys)):
                 keyboard.release(key)
 
         for key in current_keys:
-            if key not in prev_keys: # if key is new then press it or else just let it be as it is already been pressed
+            if key not in prev_keys:  # if key is new then press it or else just let it be as it is already been pressed
                 keyboard.press(key)
 
         prev_keys = current_keys
 
     result_img = draw_hand_landmarks(
         rgb_frame.numpy_view(), hlm, rest_pose_ldms)
-    cv2.imshow("img", result_img)
+    resized_result_img = cv2.resize(result_img, None, fx=RESIZE_FX, fy=RESIZE_FY)
+    cv2.namedWindow(WIN_NAME, cv2.WINDOW_AUTOSIZE | cv2.WINDOW_GUI_NORMAL)
+    cv2.imshow(WIN_NAME, resized_result_img)
 
     if cv2.waitKey(1) & 0xFF == 27:
         # later here clear everything before breaking the loop :)
