@@ -95,3 +95,22 @@ So at first i tried to do the bottom of middle finger(9) and wrist(0) for w and 
 
 Also i am now releasing current keys before quitting so as to i will not need to get it to be in rest pose before making it stop working. AM using thumb down from off hand as gesture to quit..
 
+-----------
+
+So for left clicking i need to measure whether user is pinching or not using index or middle finger, for i made a new file samples/finger_join.py that finds the hlm of both tip(index finger and thumb) then multiply with the width and hight of the image to get pixel value from 0-1 as we need this. Then i got to know we can use norm function to find the distance between 2 points, simply did that and got! When i was pinching, the value was going below 20. `Then during that i realized i was finding the distance for w and s as well, i think later we can implement norm there too..`
+
+For left clicking i realized we do both high cps click and one time click without realising(like during mining), so it means we need 2 different gestures for left click:
+- High CPS: Pinch thumb + index finger(it will autoclick until u hold it)
+- Hold Click: Pinch thum + middle finger
+
+Yeah we are using both for left click, we'll see for right click later..
+
+-----------
+
+So after getting idea of what i wanna do, i wrote the logic for mouse that detects if its an index pinch or middle pinch. AT first i implemented clicking logic for just middle pinch as it was hold mouse click which was easier: just press and release
+
+Now it was time for high cps and tbh till this point i realized i was making something similar to cheat client as i was supporting autoclicking on right click lol, but what else can i do? i can't just ask my user to move his fingers to fast to gain 6cps, neither it will track so fast. But to avoid being marked as cheat, i kept the cps lil randomized like first click was 100ms so next might be like 85 and next would be 147 etc.(with a max fector like sum or do difference by a factor(0.2 rn))
+
+After that i got a problem, i want it to run it as independant while loop that triggers a start and an end
+
+After asking it in discord, i got to know that i should use threading and after learning abt it a bit, i implemented it as well though it was lil tough but i did that: There was a global variable that tracks whether the cps is started or not and based on that it starts or end. I create thread everytime i end then start as we cannot reuse the same thread unfort.

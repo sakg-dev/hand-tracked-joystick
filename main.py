@@ -2,12 +2,16 @@ import cv2
 import time
 import numpy as np
 import mediapipe as mp
-from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold, quit_and_release
-from pynput.keyboard import Key, Controller
+from time import sleep
+import threading
+from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold, quit_and_release, randomize_int
+from pynput.keyboard import Key, Controller as keyboard_controller
+from pynput.mouse import Button, Controller as mouse_controller
 
 cam = cv2.VideoCapture(0)
 
-keyboard = Controller()
+keyboard = keyboard_controller()
+mouse = mouse_controller()
 
 # bundles both gesture recognizer and hand landmark tracker
 gesture_recognizer = load_gesture_recognizer()
@@ -20,12 +24,32 @@ WIN_NAME = "gameee"
 THRESHOLD = 0.05
 RESIZE_FX = 0.35
 RESIZE_FY = 0.35
+PINCH_DISTANCE = 6
+H = 168
+W = 224
+CPS = 6
+CPS_MAX_RAND_FACTOR = 0.2
 
 rest_pose_ldms = []
 
 pTime = 0
 
 prev_keys = []
+prev_mouse_btn_type = None
+
+def cps_loop(ms_per_click):
+    while True:
+        # do task here
+        # print("X")
+        global cps_thread_running
+        if cps_thread_running==False:
+            break
+        mouse.click(Button.left)
+        sleep(randomize_int(ms_per_click, CPS_MAX_RAND_FACTOR)/1000)
+    # print("thread is killed successfully")
+
+cps_thread_running = False
+cps_thread = None
 
 while True:
     success, frame = cam.read()
@@ -60,11 +84,10 @@ while True:
                 rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            quit_and_release(current_keys,keyboard)
+            quit_and_release(current_keys, keyboard)
             break
 
-    # For finding difference b/w rest and current ldms and do actions
-    diff = None
+    # For finding difference b/w rest and current ldms and do actions for keyboard
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         main_hand_ldm = hlm[handedness.index(MAIN_HAND)]
 
@@ -111,15 +134,97 @@ while True:
 
         prev_keys = current_keys
 
+    # For Mouse
+    if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
+        def hold_press():
+            mouse.press(Button.left)
+        def hold_release():
+            mouse.release(Button.left)
+        def cps_start():
+            global cps_thread_running
+            global cps_thread
+            cps_thread_running = True
+            cps_thread = threading.Thread(target=cps_loop,args=[int(1000/CPS)])
+            cps_thread.start()
+        def cps_end():
+            global cps_thread_running
+            global cps_thread 
+            cps_thread_running = False
+            cps_thread.join()
+        
+        main_hand_ldms = hlm[handedness.index(MAIN_HAND)]
+
+        thumb = main_hand_ldms[4]
+        index = main_hand_ldms[8]
+        middle = main_hand_ldms[12]
+
+        thumb_x, thumb_y = int(thumb.x*W), int(thumb.y*H)
+        index_x, index_y = int(index.x*W), int(index.y*H)
+        middle_x, middle_y = int(middle.x*W), int(middle.y*H)
+
+        thumb_and_index_distance = cv2.norm(
+            (thumb_x, thumb_y), (index_x, index_y)
+        )
+        thumb_and_middle_distance = cv2.norm(
+            (thumb_x, thumb_y), (middle_x, middle_y)
+        )
+
+        thumb_and_index_pinch = thumb_and_index_distance <= PINCH_DISTANCE
+        thumb_and_middle_pinch = thumb_and_middle_distance <= PINCH_DISTANCE
+
+
+        if(thumb_and_index_pinch and thumb_and_middle_pinch):
+            print("User can't do both types of left click at same time")
+        else:
+            current_mouse_btn_type = None
+            if thumb_and_middle_pinch:
+                # print("Middle Pinch")
+                current_mouse_btn_type = "hold"
+                # current_mouse_btns.append(Button.left)
+            elif thumb_and_index_pinch:
+                # print("Index Pinch")
+                current_mouse_btn_type = "high_cps"
+
+            # If prev btn exist but now it doesn't, release prev
+            # If current btn exist but prev is null press btn but if prev is not null but different so relase prev and press current
+            if prev_mouse_btn_type:
+                if not current_mouse_btn_type:
+                    if prev_mouse_btn_type=="hold":
+                        hold_release()
+                    elif prev_mouse_btn_type == "high_cps":
+                        cps_end()
+                else:
+                    if prev_mouse_btn_type != current_mouse_btn_type:
+                        if prev_mouse_btn_type=="hold":
+                            hold_release()
+                        elif prev_mouse_btn_type=="high_cps":
+                            cps_end()
+
+                        if current_mouse_btn_type == "hold":
+                            hold_press()
+                        elif current_mouse_btn_type=="high_cps":
+                            cps_start()
+            else:
+                if current_mouse_btn_type:
+                    if current_mouse_btn_type=="hold":
+                        hold_press()
+                    elif current_mouse_btn_type=="high_cps":
+                        cps_start()
+
+
+            prev_mouse_btn_type = current_mouse_btn_type
+
     result_img = draw_hand_landmarks(
         rgb_frame.numpy_view(), hlm, rest_pose_ldms)
-    resized_result_img = cv2.resize(result_img, None, fx=RESIZE_FX, fy=RESIZE_FY)
+    # Either do width and height or fx and fy - one thing only
+    resized_result_img = cv2.resize(
+        result_img, None, fx=RESIZE_FX, fy=RESIZE_FY)
     cv2.namedWindow(WIN_NAME, cv2.WINDOW_AUTOSIZE | cv2.WINDOW_GUI_NORMAL)
     cv2.imshow(WIN_NAME, resized_result_img)
 
     if cv2.waitKey(1) & 0xFF == 27:
         # later here clear everything before breaking the loop :)
-        quit_and_release(current_keys,keyboard)
+        quit_and_release(current_keys, keyboard)
         break
 
 cam.release()
