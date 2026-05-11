@@ -114,3 +114,18 @@ Now it was time for high cps and tbh till this point i realized i was making som
 After that i got a problem, i want it to run it as independant while loop that triggers a start and an end
 
 After asking it in discord, i got to know that i should use threading and after learning abt it a bit, i implemented it as well though it was lil tough but i did that: There was a global variable that tracks whether the cps is started or not and based on that it starts or end. I create thread everytime i end then start as we cannot reuse the same thread unfort.
+
+-----------
+
+Right click also had 2 mode: press and release(like during eating) and click(like placing blocks, trade with villager etc etc).
+
+Instead of making it a complete different gesture, i made it same to left click gesture, but also a off hand gesture that tells its for right click:
+
+- Hold Right Click = (Pinch thumb + middle finger) + Off hand gesture
+- Right Click CPS = (Pinch thumb + index finger) + Off hand gesture
+
+For now i kept open palm as Off hand gesture but we may chane later.
+
+It was simple to implement as most of the logic were written i jst had to make a global variable that checks if off hand palm is opened or close, then during event triggers lie press release, pass a btn variable as arg that is Button.left if off palm is close or else Button.right.,
+
+So till now we have made a basic version of what we want, but the code looks really messy and unorganized, hence my next aim would be to structuralize code and lil optimize ig

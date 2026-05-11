@@ -28,6 +28,7 @@ PINCH_DISTANCE = 6
 H = 168
 W = 224
 CPS = 6
+RIGHT_CPS = 3
 CPS_MAX_RAND_FACTOR = 0.2
 
 rest_pose_ldms = []
@@ -37,14 +38,14 @@ pTime = 0
 prev_keys = []
 prev_mouse_btn_type = None
 
-def cps_loop(ms_per_click):
+def cps_loop(ms_per_click, btn):
     while True:
         # do task here
         # print("X")
         global cps_thread_running
         if cps_thread_running==False:
             break
-        mouse.click(Button.left)
+        mouse.click(btn)
         sleep(randomize_int(ms_per_click, CPS_MAX_RAND_FACTOR)/1000)
     # print("thread is killed successfully")
 
@@ -73,6 +74,8 @@ while True:
     handedness = list(
         map(lambda handedness: handedness[0].category_name, handedness))
 
+    is_off_hand_palm_open = False
+
     # For setting rest pos
     if OFF_HAND in handedness:
         gesture = gestures[handedness.index(OFF_HAND)][0].category_name
@@ -86,6 +89,8 @@ while True:
         elif gesture == QUIT_GESTURE:
             quit_and_release(current_keys, keyboard)
             break
+        elif gesture == "Open_Palm":
+            is_off_hand_palm_open = True
 
     # For finding difference b/w rest and current ldms and do actions for keyboard
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
@@ -136,15 +141,16 @@ while True:
 
     # For Mouse
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
-        def hold_press():
-            mouse.press(Button.left)
-        def hold_release():
-            mouse.release(Button.left)
-        def cps_start():
+        def hold_press(btn):
+            mouse.press(btn)
+        def hold_release(btn):
+            mouse.release(btn)
+        def cps_start(btn):
             global cps_thread_running
             global cps_thread
             cps_thread_running = True
-            cps_thread = threading.Thread(target=cps_loop,args=[int(1000/CPS)])
+            cps = CPS if is_off_hand_palm_open == False else RIGHT_CPS
+            cps_thread = threading.Thread(target=cps_loop,args=[int(1000/cps), btn])
             cps_thread.start()
         def cps_end():
             global cps_thread_running
@@ -174,42 +180,40 @@ while True:
 
 
         if(thumb_and_index_pinch and thumb_and_middle_pinch):
-            print("User can't do both types of left click at same time")
+            print("User can't do both types of click at same time")
         else:
             current_mouse_btn_type = None
             if thumb_and_middle_pinch:
-                # print("Middle Pinch")
                 current_mouse_btn_type = "hold"
-                # current_mouse_btns.append(Button.left)
             elif thumb_and_index_pinch:
-                # print("Index Pinch")
                 current_mouse_btn_type = "high_cps"
 
             # If prev btn exist but now it doesn't, release prev
             # If current btn exist but prev is null press btn but if prev is not null but different so relase prev and press current
+            btn = Button.left if is_off_hand_palm_open == False else Button.right
             if prev_mouse_btn_type:
                 if not current_mouse_btn_type:
                     if prev_mouse_btn_type=="hold":
-                        hold_release()
+                        hold_release(btn)
                     elif prev_mouse_btn_type == "high_cps":
                         cps_end()
                 else:
                     if prev_mouse_btn_type != current_mouse_btn_type:
                         if prev_mouse_btn_type=="hold":
-                            hold_release()
+                            hold_release(btn)
                         elif prev_mouse_btn_type=="high_cps":
                             cps_end()
 
                         if current_mouse_btn_type == "hold":
-                            hold_press()
+                            hold_press(btn)
                         elif current_mouse_btn_type=="high_cps":
-                            cps_start()
+                            cps_start(btn)
             else:
                 if current_mouse_btn_type:
                     if current_mouse_btn_type=="hold":
-                        hold_press()
+                        hold_press(btn)
                     elif current_mouse_btn_type=="high_cps":
-                        cps_start()
+                        cps_start(btn)
 
 
             prev_mouse_btn_type = current_mouse_btn_type

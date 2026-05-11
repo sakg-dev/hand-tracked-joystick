@@ -10,10 +10,13 @@ Tasks:
 - [x] Measure the depth difference b/w rest and current hand.
 - [x] Do W for forward and S for backward hand
 - [x] Make Window that sticks while you play game..
-- [ ] Implement Right and left click
-- [ ] Implement Sprint
-- [ ] Make it confortable and kind of accurate and less oopsy
+- [x] Implement Right and left click
+- [ ] Structuralize and make code better
+- [ ] Implement Sprint, switching inventory(1-9), rotation.
+- [ ] Make it confortable and kind of accurate, faster and less oopsy
 
 Controls:
 - Space, Shift, A and D - Jump, Sneak, left, right
 - W and S: Forward and Backwars
+- Left click high cps and press/release: main hand thumb + index pinch and thumb + middle pinch
+- Right click cps and press/release: (main hand thumb + index pinch and thumb + middle pinch) + Off hand gesture (Open palm)
