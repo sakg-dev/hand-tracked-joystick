@@ -43,17 +43,6 @@ def draw_hand_landmarks(rgb_img, hand_landmarks_list, rest_pose_ldms):
     return annoted_img_bgr
 
 
-def load_gesture_recognizer():
-    base_option = python.BaseOptions(
-        model_asset_path="models/gesture_recognizer.task")
-    options = vision.GestureRecognizerOptions(
-        base_options=base_option,
-        num_hands=2
-    )
-    recognizer = vision.GestureRecognizer.create_from_options(options)
-    return recognizer
-
-
 def is_above_threshold(threshold, val):
     # ans = val > (-abs(threshold) if val < 0 else abs(threshold))
     return abs(val) > threshold

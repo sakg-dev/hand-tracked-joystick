@@ -25,3 +25,12 @@
 
 
 # import threading
+
+# import cv2
+# cam = cv2.VideoCapture(0)
+# print(cam.isOpened())
+
+import sys
+sys.path.insert(0, "/home/sakg/Desktop/hand_tracked_joystick/")
+from core.gesture_recognizer import Gesture_recognizer
+gest = Gesture_recognizer()

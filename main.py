@@ -1,35 +1,20 @@
 import cv2
 import time
-import numpy as np
 import mediapipe as mp
 from time import sleep
 import threading
-from tools import draw_hand_landmarks, load_gesture_recognizer, is_above_threshold, quit_and_release, randomize_int
+from tools import draw_hand_landmarks, is_above_threshold, quit_and_release, randomize_int
 from pynput.keyboard import Key, Controller as keyboard_controller
 from pynput.mouse import Button, Controller as mouse_controller
+from core.camera import Camera
+from core.gesture_recognizer import Gesture_recognizer
+from config.constants import MAIN_HAND, OFF_HAND, LDM_SET_GESTURE, QUIT_GESTURE, WIN_NAME, LANDMARK_DELTA_THRESHOLD, PINCH_THRESHOLD, WINDOW_HEIGHT, WINDOW_WIDTH, LEFT_CPS, RIGHT_CPS, CPS_MAX_RAND_FACTOR, RIGHT_CLICK_GESTURE
 
-cam = cv2.VideoCapture(0)
+camera = Camera(0)
+gesture_recognizer = Gesture_recognizer()
 
 keyboard = keyboard_controller()
 mouse = mouse_controller()
-
-# bundles both gesture recognizer and hand landmark tracker
-gesture_recognizer = load_gesture_recognizer()
-
-MAIN_HAND = "Left"
-OFF_HAND = "Right"
-LDM_SET_GESTURE = "Thumb_Up"
-QUIT_GESTURE = "Thumb_Down"
-WIN_NAME = "gameee"
-THRESHOLD = 0.05
-RESIZE_FX = 0.35
-RESIZE_FY = 0.35
-PINCH_DISTANCE = 6
-H = 168
-W = 224
-CPS = 6
-RIGHT_CPS = 3
-CPS_MAX_RAND_FACTOR = 0.2
 
 rest_pose_ldms = []
 
@@ -38,22 +23,24 @@ pTime = 0
 prev_keys = []
 prev_mouse_btn_type = None
 
+
 def cps_loop(ms_per_click, btn):
     while True:
         # do task here
         # print("X")
         global cps_thread_running
-        if cps_thread_running==False:
+        if cps_thread_running == False:
             break
         mouse.click(btn)
         sleep(randomize_int(ms_per_click, CPS_MAX_RAND_FACTOR)/1000)
     # print("thread is killed successfully")
 
+
 cps_thread_running = False
 cps_thread = None
 
 while True:
-    success, frame = cam.read()
+    frame = camera.read()
     current_keys = []
 
     cTime = time.time()
@@ -66,8 +53,7 @@ while True:
     rgb_img = cv2.cvtColor(img_with_fps, cv2.COLOR_BGR2RGB)
     rgb_frame = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb_img)
 
-    r = gesture_recognizer.recognize(rgb_frame)
-    gestures, handedness, hlm, hwlm = r.gestures, r.handedness, r.hand_landmarks, r.hand_world_landmarks
+    gestures, handedness, hlm, hwlm = gesture_recognizer.recognize(rgb_frame)
 
     # glitches and shows wrong arr when new item is added or removed even after adding check of score hence need some kind of cooldown ig!
     # if handedness[0].score>0.95 else False
@@ -89,7 +75,7 @@ while True:
         elif gesture == QUIT_GESTURE:
             quit_and_release(current_keys, keyboard)
             break
-        elif gesture == "Open_Palm":
+        elif gesture == RIGHT_CLICK_GESTURE:
             is_off_hand_palm_open = True
 
     # For finding difference b/w rest and current ldms and do actions for keyboard
@@ -100,12 +86,12 @@ while True:
         main_hand_center = main_hand_ldm[9]
         dx = rest_pose_center.x - main_hand_center.x
         dy = rest_pose_center.y - main_hand_center.y
-        if is_above_threshold(THRESHOLD, dx):
+        if is_above_threshold(LANDMARK_DELTA_THRESHOLD, dx):
             if (dx > 0):
                 current_keys.append("A")
             else:
                 current_keys.append("D")
-        if is_above_threshold(THRESHOLD, dy):
+        if is_above_threshold(LANDMARK_DELTA_THRESHOLD, dy):
             if (dy > 0):
                 current_keys.append(Key.space)
             else:
@@ -143,30 +129,34 @@ while True:
     if (MAIN_HAND in handedness and len(rest_pose_ldms) > 0):
         def hold_press(btn):
             mouse.press(btn)
+
         def hold_release(btn):
             mouse.release(btn)
+
         def cps_start(btn):
             global cps_thread_running
             global cps_thread
             cps_thread_running = True
-            cps = CPS if is_off_hand_palm_open == False else RIGHT_CPS
-            cps_thread = threading.Thread(target=cps_loop,args=[int(1000/cps), btn])
+            cps = LEFT_CPS if is_off_hand_palm_open == False else RIGHT_CPS
+            cps_thread = threading.Thread(
+                target=cps_loop, args=[int(1000/cps), btn])
             cps_thread.start()
+
         def cps_end():
             global cps_thread_running
-            global cps_thread 
+            global cps_thread
             cps_thread_running = False
             cps_thread.join()
-        
+
         main_hand_ldms = hlm[handedness.index(MAIN_HAND)]
 
         thumb = main_hand_ldms[4]
         index = main_hand_ldms[8]
         middle = main_hand_ldms[12]
 
-        thumb_x, thumb_y = int(thumb.x*W), int(thumb.y*H)
-        index_x, index_y = int(index.x*W), int(index.y*H)
-        middle_x, middle_y = int(middle.x*W), int(middle.y*H)
+        thumb_x, thumb_y = int(thumb.x*WINDOW_WIDTH), int(thumb.y*WINDOW_HEIGHT)
+        index_x, index_y = int(index.x*WINDOW_WIDTH), int(index.y*WINDOW_HEIGHT)
+        middle_x, middle_y = int(middle.x*WINDOW_WIDTH), int(middle.y*WINDOW_HEIGHT)
 
         thumb_and_index_distance = cv2.norm(
             (thumb_x, thumb_y), (index_x, index_y)
@@ -175,11 +165,10 @@ while True:
             (thumb_x, thumb_y), (middle_x, middle_y)
         )
 
-        thumb_and_index_pinch = thumb_and_index_distance <= PINCH_DISTANCE
-        thumb_and_middle_pinch = thumb_and_middle_distance <= PINCH_DISTANCE
+        thumb_and_index_pinch = thumb_and_index_distance <= PINCH_THRESHOLD
+        thumb_and_middle_pinch = thumb_and_middle_distance <= PINCH_THRESHOLD
 
-
-        if(thumb_and_index_pinch and thumb_and_middle_pinch):
+        if (thumb_and_index_pinch and thumb_and_middle_pinch):
             print("User can't do both types of click at same time")
         else:
             current_mouse_btn_type = None
@@ -193,36 +182,34 @@ while True:
             btn = Button.left if is_off_hand_palm_open == False else Button.right
             if prev_mouse_btn_type:
                 if not current_mouse_btn_type:
-                    if prev_mouse_btn_type=="hold":
+                    if prev_mouse_btn_type == "hold":
                         hold_release(btn)
                     elif prev_mouse_btn_type == "high_cps":
                         cps_end()
                 else:
                     if prev_mouse_btn_type != current_mouse_btn_type:
-                        if prev_mouse_btn_type=="hold":
+                        if prev_mouse_btn_type == "hold":
                             hold_release(btn)
-                        elif prev_mouse_btn_type=="high_cps":
+                        elif prev_mouse_btn_type == "high_cps":
                             cps_end()
 
                         if current_mouse_btn_type == "hold":
                             hold_press(btn)
-                        elif current_mouse_btn_type=="high_cps":
+                        elif current_mouse_btn_type == "high_cps":
                             cps_start(btn)
             else:
                 if current_mouse_btn_type:
-                    if current_mouse_btn_type=="hold":
+                    if current_mouse_btn_type == "hold":
                         hold_press(btn)
-                    elif current_mouse_btn_type=="high_cps":
+                    elif current_mouse_btn_type == "high_cps":
                         cps_start(btn)
-
 
             prev_mouse_btn_type = current_mouse_btn_type
 
     result_img = draw_hand_landmarks(
         rgb_frame.numpy_view(), hlm, rest_pose_ldms)
     # Either do width and height or fx and fy - one thing only
-    resized_result_img = cv2.resize(
-        result_img, None, fx=RESIZE_FX, fy=RESIZE_FY)
+    resized_result_img = cv2.resize(result_img, (WINDOW_WIDTH, WINDOW_HEIGHT))
     cv2.namedWindow(WIN_NAME, cv2.WINDOW_AUTOSIZE | cv2.WINDOW_GUI_NORMAL)
     cv2.imshow(WIN_NAME, resized_result_img)
 
@@ -231,5 +218,5 @@ while True:
         quit_and_release(current_keys, keyboard)
         break
 
-cam.release()
+camera.release()
 cv2.destroyAllWindows()

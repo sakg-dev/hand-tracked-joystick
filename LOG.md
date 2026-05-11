@@ -129,3 +129,5 @@ For now i kept open palm as Off hand gesture but we may chane later.
 It was simple to implement as most of the logic were written i jst had to make a global variable that checks if off hand palm is opened or close, then during event triggers lie press release, pass a btn variable as arg that is Button.left if off palm is close or else Button.right.,
 
 So till now we have made a basic version of what we want, but the code looks really messy and unorganized, hence my next aim would be to structuralize code and lil optimize ig
+
+-----------
