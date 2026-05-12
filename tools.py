@@ -2,10 +2,10 @@ import numpy as np
 from mediapipe.tasks.python.vision import drawing_utils
 from mediapipe.tasks.python.vision import drawing_styles
 from mediapipe.tasks.python import vision
-from mediapipe.tasks import python
 import cv2
 import random
 from copy import deepcopy
+from pynput.keyboard import Controller as kController
 
 
 def get_hand_landmarks_style(color):
@@ -48,10 +48,14 @@ def is_above_threshold(threshold, val):
     return abs(val) > threshold
 
 
-def quit_and_release(current_keys, keyboard):
+def quit_and_release(current_keys):
+    keyboard = kController()
     for key in current_keys:
         keyboard.release(key)
-    return
+    
+    # Mouse: Simple left and right press/release || high cps loop
+
+    raise RuntimeError("Quitting")
 
 
 def randomize_int(val, max_factor):

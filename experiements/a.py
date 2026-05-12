@@ -30,7 +30,12 @@
 # cam = cv2.VideoCapture(0)
 # print(cam.isOpened())
 
-import sys
-sys.path.insert(0, "/home/sakg/Desktop/hand_tracked_joystick/")
-from core.gesture_recognizer import Gesture_recognizer
-gest = Gesture_recognizer()
+# import sys
+# sys.path.insert(0, "/home/sakg/Desktop/hand_tracked_joystick/")
+# from core.gesture_recognizer import Gesture_recognizer
+# gest = Gesture_recognizer()
+
+# isit = True
+# if isit:
+#     a = 6
+# print(a)
