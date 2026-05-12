@@ -6,6 +6,7 @@ import cv2
 import random
 from copy import deepcopy
 from pynput.keyboard import Controller as kController
+from pynput.mouse import Button, Controller as mController
 
 
 def get_hand_landmarks_style(color):
@@ -48,12 +49,18 @@ def is_above_threshold(threshold, val):
     return abs(val) > threshold
 
 
-def quit_and_release(current_keys):
+def quit_and_release(keys, prev_mouse_btn_type, _cps_end):
     keyboard = kController()
-    for key in current_keys:
+    for key in keys:
         keyboard.release(key)
     
     # Mouse: Simple left and right press/release || high cps loop
+    # Rn user will never do right click b4 releasing as we need to keep palm open of off hand for right click but for closing we need to do down thumbsup, it means we have to check for left hold click and high cps
+    mouse = mController()
+    if prev_mouse_btn_type=="hold":
+        mouse.release(Button.left)
+    elif prev_mouse_btn_type == "high_cps":
+        _cps_end()
 
     raise RuntimeError("Quitting")
 

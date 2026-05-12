@@ -1,9 +1,9 @@
-# from pynput.keyboard import Key, Controller as kController
-# from pynput.mouse import Button, Controller as mController
-# from time import sleep
+from pynput.keyboard import Key, Controller as kController
+from pynput.mouse import Button, Controller as mController
+from time import sleep
 
-# keyboard = kController()
-# mouse = mController()
+keyboard = kController()
+mouse = mController()
 
 # while True:
 #     keyboard.press('a')
@@ -15,7 +15,14 @@
 #     keyboard.release(Key.shift)
 #     sleep(5)
 
-# sleep(5)
-# while True:
-#     sleep(0.01) # 90 cps lol
-#     mouse.click(Button.left)
+sleep(5)
+while True:
+    sleep(1) # 90 cps lol
+    mouse.release(Button.left)
+    mouse.release(Button.right)
+    keyboard.release("W")
+    keyboard.release("A")
+    keyboard.release("S")
+    keyboard.release("D")
+    keyboard.release(Key.shift)
+    keyboard.release(Key.space)

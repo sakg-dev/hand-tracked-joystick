@@ -30,7 +30,8 @@ while True:
         gesture_mapped = gesture_mapper.map(
             hlm,
             handedness,
-            gestures
+            gestures,
+            action_taker
         )
         rest_pose_ldms = []
         if gesture_mapped:
@@ -47,8 +48,7 @@ while True:
         cv2.namedWindow(WIN_NAME, cv2.WINDOW_AUTOSIZE | cv2.WINDOW_GUI_NORMAL)
         cv2.imshow(WIN_NAME, resized_result_img)
 
-        if cv2.waitKey(1) & 0xFF == 27:
-            quit_and_release(current_keys)
+        cv2.waitKey(1)
     except:
         print("Quitting")
         break

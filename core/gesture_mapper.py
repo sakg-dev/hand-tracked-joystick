@@ -13,7 +13,7 @@ class Gesture_mapper:
     def __init__(self):
         self.rest_pose_ldms = []
 
-    def _off_hand_gesture_actions(self):
+    def _off_hand_gesture_actions(self, action_taker):
         handedness = self.handedness
 
         if OFF_HAND not in handedness:
@@ -28,7 +28,8 @@ class Gesture_mapper:
                 self.rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            quit_and_release(self.current_keys)
+            print(action_taker.prev_mouse_btn_type,end="\n\n\n\n")
+            quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_type, action_taker._cps_end)
         elif gesture == RIGHT_CLICK_GESTURE:
             self.is_off_hand_palm_open = True
 
@@ -95,7 +96,7 @@ class Gesture_mapper:
             elif thumb_and_index_pinch:
                 self.current_mouse_btn_type = "high_cps"
 
-    def map(self, hlm, handedness, gestures):
+    def map(self, hlm, handedness, gestures, action_taker):
         self.hlm = hlm
         self.handedness = list(map(lambda hd: hd[0].category_name, handedness))
         self.gestures = gestures
@@ -107,7 +108,7 @@ class Gesture_mapper:
         if len(self.handedness) == 0:
             return False
 
-        self._off_hand_gesture_actions()
+        self._off_hand_gesture_actions(action_taker)
 
         self._main_hand_gesture_actions()
 
