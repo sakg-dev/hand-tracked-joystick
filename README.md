@@ -11,8 +11,8 @@ Tasks:
 - [x] Do W for forward and S for backward hand
 - [x] Make Window that sticks while you play game..
 - [x] Implement Right and left click
-- [ ] Structuralize and make code better
-- [ ] Implement Sprint, switching inventory(1-9), rotation.
+- [x] Structuralize and make code better
+- [ ] Implement Sprint, switching inventory(1-9) and rotation.
 - [ ] Make it confortable and kind of accurate, faster and less oopsy
 
 Controls:

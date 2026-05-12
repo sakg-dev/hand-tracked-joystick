@@ -28,7 +28,6 @@ class Gesture_mapper:
                 self.rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            print(action_taker.prev_mouse_btn_type,end="\n\n\n\n")
             quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_type, action_taker._cps_end)
         elif gesture == RIGHT_CLICK_GESTURE:
             self.is_off_hand_palm_open = True

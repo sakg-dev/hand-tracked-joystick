@@ -131,3 +131,15 @@ It was simple to implement as most of the logic were written i jst had to make a
 So till now we have made a basic version of what we want, but the code looks really messy and unorganized, hence my next aim would be to structuralize code and lil optimize ig
 
 -----------
+
+Srry for late commits and logs.
+So i have modularized and made code much better and solved some bug.
+At first commit, I created files for major components like camera, constants etc. and seperated them in diff folders.
+In second commit(writte fix:), i made the most part modular, solved issues.
+In third commit i solved quit and release function as it was lil wrong.
+And at last commit(this), i wrote the logs, made the main.py better and structured!
+
+Later we may also make tests file to check...
+So now we can do right/left click and WASD and jump/sneak.
+
+Now we have to work on rest of the things like sprint, rotation and switching inventory.
