@@ -12,7 +12,9 @@ Tasks:
 - [x] Make Window that sticks while you play game..
 - [x] Implement Right and left click
 - [x] Structuralize and make code better
-- [ ] Implement Sprint, switching inventory(1-9) and rotation.
+- [x] Sprint
+- [ ] Switching inventory(1-9)
+* [ ] Rotation
 - [ ] Make it confortable and kind of accurate, faster and less oopsy
 
 Controls:
@@ -20,3 +22,4 @@ Controls:
 - W and S: Forward and Backwars
 - Left click high cps and press/release: main hand thumb + index pinch and thumb + middle pinch
 - Right click cps and press/release: (main hand thumb + index pinch and thumb + middle pinch) + Off hand gesture (Open palm)
+- W then rest then under 1 sec: Sprint mode (back for removing)

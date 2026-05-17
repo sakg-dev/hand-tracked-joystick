@@ -143,3 +143,11 @@ Later we may also make tests file to check...
 So now we can do right/left click and WASD and jump/sneak.
 
 Now we have to work on rest of the things like sprint, rotation and switching inventory.
+
+-----------
+
+So for sprint i chose W then rest pose then W under 1 sec as it is familiar to sprint mode.
+i had to write some seperate logic as unlike rest of the keys(WASD/space/shift), it doesn't show the gesture every frame rather it shows first time only when we do W then rest then W and remove when we do back or w is cancelled.
+At first i wrote logic of timestamps to see last forward(w) time, last rest pose time and current time(when w is pressed), then i calculate if time between last forward time and current time is less than 1 second and we did rest pose in between, then do sprint. I used a global variable(`self.sprint`) to store current state then every frame i check if `self.sprint` is true and W is in current keys, then do `self.current_keys.append("R")`(r is sprint key) or else if w not in current keys but `self.sprint` is True, then `self.sprint = False`
+
+And it worked! now lets do the harder part: switching inventory
