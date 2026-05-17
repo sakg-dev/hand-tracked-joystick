@@ -6,12 +6,16 @@ from tools import quit_and_release, is_above_threshold
 from config.constants import OFF_HAND, MAIN_HAND, LDM_SET_GESTURE, QUIT_GESTURE, RIGHT_CLICK_GESTURE, LANDMARK_DELTA_THRESHOLD, WINDOW_WIDTH, WINDOW_HEIGHT, PINCH_THRESHOLD
 import cv2
 from pynput.keyboard import Key
+import time
 
 class Gesture_mapper:
     """Takes Hand landmarks and outputs all actions that has to be taken."""
 
     def __init__(self):
         self.rest_pose_ldms = []
+        self.last_forward_time = None
+        self.last_rest_pose_time = None
+        self.sprint = False
 
     def _off_hand_gesture_actions(self, action_taker):
         handedness = self.handedness
@@ -64,6 +68,27 @@ class Gesture_mapper:
                 self.current_keys.append("S")
             else:
                 self.current_keys.append("W")
+
+                current_time = time.time()
+                if self.last_forward_time and self.last_rest_pose_time:
+                    if (current_time - self.last_forward_time) < 1 and current_time > self.last_rest_pose_time > self.last_forward_time:
+                        self.last_forward_time = None
+                        self.last_rest_pose_time = None
+                        # Sprint must start when W and sprint is true and stop when its w is stopped
+                        self.sprint = True
+                    else:
+                        self.last_forward_time  = time.time()
+                else:
+                    self.last_forward_time  = time.time()
+
+        if self.sprint:
+            if "W" in self.current_keys:
+                self.current_keys.append("R")
+            else:
+                self.sprint = False
+        
+        if len(self.current_keys) == 0:
+            self.last_rest_pose_time = time.time()
 
         # ---------Mouse--------------------
         thumb = main_hand_ldm[4]

@@ -39,3 +39,11 @@
 # if isit:
 #     a = 6
 # print(a)
+
+# from time import time, sleep
+# import random
+# prev = time()
+# randomized_millisec = random.randint(500,1000)
+# sleep(randomized_millisec/1000)
+# current = time()
+# print(round(current-prev,2))
