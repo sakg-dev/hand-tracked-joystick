@@ -16,7 +16,7 @@ class Action_taker:
         self.mouse = mController()
 
         self.prev_keys = []
-        self.prev_mouse_btn_type = None
+        self.prev_mouse_btn_types = []
         self.cps_thread_running = False
         self.cps_thread = None
 
@@ -61,38 +61,34 @@ class Action_taker:
 
     def _mouse(self):
         btn = Button.left if self.is_off_hand_palm_open == False else Button.right
-        prev_mouse_btn_type = self.prev_mouse_btn_type
-        current_mouse_btn_type = self.current_mouse_btn_type
+        prev_mouse_btn_types = self.prev_mouse_btn_types
+        current_mouse_btn_types = self.current_mouse_btn_types
 
-        if not self.current_mouse_btn_type:
-            if prev_mouse_btn_type:
-                if prev_mouse_btn_type == "hold":
+        if len(current_mouse_btn_types) == 0:
+            if len(prev_mouse_btn_types) > 0:
+                if "hold" in prev_mouse_btn_types:
                     self._hold_release(btn)
-                elif prev_mouse_btn_type == "high_cps":
+                if "high_cps" in prev_mouse_btn_types:
                     self._cps_end()
-            else:
-                if prev_mouse_btn_type != current_mouse_btn_type:
-                    if prev_mouse_btn_type == "hold":
-                        self._hold_release(btn)
-                    elif prev_mouse_btn_type == "high_cps":
-                        self._cps_end()
-
-                    if current_mouse_btn_type == "hold":
-                        self._hold_press(btn)
-                    elif current_mouse_btn_type == "high_cps":
-                        self._cps_start(btn)
         else:
-            if current_mouse_btn_type:
-                if current_mouse_btn_type == "hold":
-                    self._hold_press(btn)
-                elif current_mouse_btn_type == "high_cps":
-                    self._cps_start(btn)
-        self.prev_mouse_btn_type = current_mouse_btn_type
+            not_anymore_key_types = list(set(prev_mouse_btn_types) - set(current_mouse_btn_types))
+            if len(not_anymore_key_types) != 0:
+                if "hold" in not_anymore_key_types:
+                    self._hold_release(btn)
+                if "high_cps" in not_anymore_key_types:
+                    self._cps_end()
 
-    def take_action(self, current_keys, current_mouse_btn_type, is_off_hand_palm_open):
+            new_key_types = list(set(current_mouse_btn_types) - set(prev_mouse_btn_types))
+            if "hold" in new_key_types:
+                self._hold_press(btn)
+            if "high_cps" in new_key_types:
+                self._cps_start(btn)
+        self.prev_mouse_btn_types = current_mouse_btn_types
+
+    def take_action(self, current_keys, current_mouse_btn_types, is_off_hand_palm_open):
         self.current_keys = current_keys
         self.is_off_hand_palm_open = is_off_hand_palm_open
-        self.current_mouse_btn_type = current_mouse_btn_type
+        self.current_mouse_btn_types = current_mouse_btn_types
 
         self._keyboard()
         self._mouse()

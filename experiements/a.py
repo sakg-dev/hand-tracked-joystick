@@ -47,3 +47,8 @@
 # sleep(randomized_millisec/1000)
 # current = time()
 # print(round(current-prev,2))
+
+# a = ["abc","def","ghl"]
+# b = ["ghl","def","pqy"]
+# print(list(set(a).intersection(b)))
+# print(list(set(a) - set(b)))

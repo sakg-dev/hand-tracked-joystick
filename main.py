@@ -38,8 +38,8 @@ class Joystick:
         )
         rest_pose_ldms = []
         if gesture_mapped:
-            current_keys, current_mouse_btn_type, is_off_hand_palm_open, rest_pose_ldms = gesture_mapped
-            self.action_taker.take_action(current_keys, current_mouse_btn_type, is_off_hand_palm_open)
+            current_keys, current_mouse_btn_types, is_off_hand_palm_open, rest_pose_ldms = gesture_mapped
+            self.action_taker.take_action(current_keys, current_mouse_btn_types, is_off_hand_palm_open)
 
         return [rest_pose_ldms, hlm]
     

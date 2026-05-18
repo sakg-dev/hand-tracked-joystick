@@ -14,7 +14,8 @@ Tasks:
 - [x] Structuralize and make code better
 - [x] Sprint
 - [ ] Switching inventory(1-9)
-* [ ] Rotation
+- [ ] Rotation
+- [ ] Normalize the hand size and everything like threashold etc
 - [ ] Make it confortable and kind of accurate, faster and less oopsy
 
 Controls:

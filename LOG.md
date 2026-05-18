@@ -151,3 +151,9 @@ i had to write some seperate logic as unlike rest of the keys(WASD/space/shift),
 At first i wrote logic of timestamps to see last forward(w) time, last rest pose time and current time(when w is pressed), then i calculate if time between last forward time and current time is less than 1 second and we did rest pose in between, then do sprint. I used a global variable(`self.sprint`) to store current state then every frame i check if `self.sprint` is true and W is in current keys, then do `self.current_keys.append("R")`(r is sprint key) or else if w not in current keys but `self.sprint` is True, then `self.sprint = False`
 
 And it worked! now lets do the harder part: switching inventory
+
+-----------
+
+So now we had to choose the gesture for switching inventory, i wanted it to feel natural hence i chose to do little right/left move then back to center under 1 sec. But it might conflict with A and D key, hence i chose to set a distance like: if hand is moved to right or left under 10%, it is for inventory or else it if for A and D.
+
+I hadn;t written the logic yet, but for switching inventory, i would be using mouse.scroll, but my code was hardcoded for right and left click only, hence i had to rewrite the code to store key types in array instead of individual only. will write the inventory logic next

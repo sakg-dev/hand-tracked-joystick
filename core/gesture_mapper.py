@@ -32,7 +32,7 @@ class Gesture_mapper:
                 self.rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_type, action_taker._cps_end)
+            quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._cps_end)
         elif gesture == RIGHT_CLICK_GESTURE:
             self.is_off_hand_palm_open = True
 
@@ -116,9 +116,9 @@ class Gesture_mapper:
             print("User can't do both types of click at same time")
         else:
             if thumb_and_middle_pinch:
-                self.current_mouse_btn_type = "hold"
+                self.current_mouse_btn_types.append("hold")
             elif thumb_and_index_pinch:
-                self.current_mouse_btn_type = "high_cps"
+                self.current_mouse_btn_types.append("high_cps")
 
     def map(self, hlm, handedness, gestures, action_taker):
         self.hlm = hlm
@@ -127,7 +127,7 @@ class Gesture_mapper:
 
         self.is_off_hand_palm_open = False
         self.current_keys = []
-        self.current_mouse_btn_type = None
+        self.current_mouse_btn_types = []
 
         if len(self.handedness) == 0:
             return False
@@ -136,4 +136,4 @@ class Gesture_mapper:
 
         self._main_hand_gesture_actions()
 
-        return [self.current_keys, self.current_mouse_btn_type, self.is_off_hand_palm_open, self.rest_pose_ldms]
+        return [self.current_keys, self.current_mouse_btn_types, self.is_off_hand_palm_open, self.rest_pose_ldms]
