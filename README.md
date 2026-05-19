@@ -13,14 +13,8 @@ Tasks:
 - [x] Implement Right and left click
 - [x] Structuralize and make code better
 - [x] Sprint
-- [ ] Switching inventory(1-9)
+- [x] Switching inventory(1-9)
 - [ ] Rotation
+- [ ] Move cursor for like trading with villager, as well as hold/release and click items
 - [ ] Normalize the hand size and everything like threashold etc
 - [ ] Make it confortable and kind of accurate, faster and less oopsy
-
-Controls:
-- Space, Shift, A and D - Jump, Sneak, left, right
-- W and S: Forward and Backwars
-- Left click high cps and press/release: main hand thumb + index pinch and thumb + middle pinch
-- Right click cps and press/release: (main hand thumb + index pinch and thumb + middle pinch) + Off hand gesture (Open palm)
-- W then rest then under 1 sec: Sprint mode (back for removing)

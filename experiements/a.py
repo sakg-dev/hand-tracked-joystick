@@ -52,3 +52,9 @@
 # b = ["ghl","def","pqy"]
 # print(list(set(a).intersection(b)))
 # print(list(set(a) - set(b)))
+
+# a = {
+#     "a":None,
+#     "b":"Hi"
+# }
+# print(None in list(a.values()))

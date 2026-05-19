@@ -157,3 +157,9 @@ And it worked! now lets do the harder part: switching inventory
 So now we had to choose the gesture for switching inventory, i wanted it to feel natural hence i chose to do little right/left move then back to center under 1 sec. But it might conflict with A and D key, hence i chose to set a distance like: if hand is moved to right or left under 10%, it is for inventory or else it if for A and D.
 
 I hadn;t written the logic yet, but for switching inventory, i would be using mouse.scroll, but my code was hardcoded for right and left click only, hence i had to rewrite the code to store key types in array instead of individual only. will write the inventory logic next
+
+-----------
+
+This took 2 attempts to be done, this log is for successful attempt.. So at first i worked on gesture_mapper.py where i wrote the logics to do these: First made a new global state as last_horizontal_move_for_inventory that stores the side and time of last time we moved to left or right and their i added a dummy keyboard.append as I wanted this move to count as busy not rest post. Then in b4 setting last_rest_pose_time, i check if current rest pose time and last rest pose time if under 1 second and between them, there is time of last horizontal move, it means user is trying to switch inventory then check the side and append in current_mouse_btn_types. In actions_taker.py, i check if prev_inventory or next_inventory is in the arr, if yes do mouse.scroll (1 or -1 based on side). thats it!
+
+Now we have to do a much harder one: Rotation, as we have to rotate in all side.. And recently i got to know, for this we will be moving cursor and we also need to move cursor for like trading with villager or managing inventory(need to hold the items as well), but lets firstly focus on simpler rotation..

@@ -8,12 +8,14 @@ import cv2
 from pynput.keyboard import Key
 import time
 
+
 class Gesture_mapper:
     """Takes Hand landmarks and outputs all actions that has to be taken."""
 
     def __init__(self):
         self.rest_pose_ldms = []
         self.last_forward_time = None
+        self.last_horizontal_move_for_invtentory = {"time": None, "side": None}
         self.last_rest_pose_time = None
         self.sprint = False
 
@@ -32,7 +34,8 @@ class Gesture_mapper:
                 self.rest_pose_ldms = []
                 print("Main hand not found")
         elif gesture == QUIT_GESTURE:
-            quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._cps_end)
+            quit_and_release(
+                action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._cps_end)
         elif gesture == RIGHT_CLICK_GESTURE:
             self.is_off_hand_palm_open = True
 
@@ -43,6 +46,7 @@ class Gesture_mapper:
             return
 
         main_hand_ldm = self.hlm[handedness.index(MAIN_HAND)]
+        current_time = time.time()
 
         # ---------Keyboard------------------
         rest_pose_center = rest_pose_ldms[9]
@@ -50,10 +54,26 @@ class Gesture_mapper:
         dx = rest_pose_center.x - main_hand_center.x
         dy = rest_pose_center.y - main_hand_center.y
         if is_above_threshold(LANDMARK_DELTA_THRESHOLD, dx):
-            if (dx > 0):
-                self.current_keys.append("A")
+            current_side = "A" if dx > 0 else "D"
+            if abs(dx) < 0.1:
+                self.current_keys.append(Key.scroll_lock) # Pressing a useless key to make it busy..
+                lst_x_move = self.last_horizontal_move_for_invtentory
+                if None not in list(lst_x_move.values()): # values complete
+                    if lst_x_move["side"] == current_side and (current_time - lst_x_move["time"]) < 0.5:
+                        pass
+                    else:
+                        # print("tim ran out or diff side")
+                        self.last_horizontal_move_for_invtentory = {
+                            "side": current_side,
+                            "time": current_time
+                        }
+                else:
+                    self.last_horizontal_move_for_invtentory = {
+                        "side": current_side,
+                        "time": current_time
+                    }
             else:
-                self.current_keys.append("D")
+                self.current_keys.append(current_side)
         if is_above_threshold(LANDMARK_DELTA_THRESHOLD, dy):
             if (dy > 0):
                 self.current_keys.append(Key.space)
@@ -69,26 +89,28 @@ class Gesture_mapper:
             else:
                 self.current_keys.append("W")
 
-                current_time = time.time()
                 if self.last_forward_time and self.last_rest_pose_time:
                     if (current_time - self.last_forward_time) < 1 and current_time > self.last_rest_pose_time > self.last_forward_time:
                         self.last_forward_time = None
-                        self.last_rest_pose_time = None
                         # Sprint must start when W and sprint is true and stop when its w is stopped
                         self.sprint = True
                     else:
-                        self.last_forward_time  = time.time()
+                        self.last_forward_time = time.time()
                 else:
-                    self.last_forward_time  = time.time()
+                    self.last_forward_time = time.time()
 
         if self.sprint:
             if "W" in self.current_keys:
                 self.current_keys.append("R")
             else:
                 self.sprint = False
-        
-        if len(self.current_keys) == 0:
-            self.last_rest_pose_time = time.time()
+
+        if len(self.current_keys) == 0 and len(self.current_mouse_btn_types) == 0: # both keyboards and mouse
+            lst_x_move = self.last_horizontal_move_for_invtentory
+            if self.last_rest_pose_time and None not in list(lst_x_move.values()):
+                if current_time - self.last_rest_pose_time<1 and current_time > lst_x_move["time"] > self.last_rest_pose_time:
+                    self.current_mouse_btn_types.append("prev_inventory" if lst_x_move["side"]=="A" else "next_inventory")
+            self.last_rest_pose_time = current_time
 
         # ---------Mouse--------------------
         thumb = main_hand_ldm[4]

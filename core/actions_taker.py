@@ -83,6 +83,10 @@ class Action_taker:
                 self._hold_press(btn)
             if "high_cps" in new_key_types:
                 self._cps_start(btn)
+            if "prev_inventory" in new_key_types:
+                self.mouse.scroll(0, 1)
+            if "next_inventory" in new_key_types:
+                self.mouse.scroll(0, -1)
         self.prev_mouse_btn_types = current_mouse_btn_types
 
     def take_action(self, current_keys, current_mouse_btn_types, is_off_hand_palm_open):
