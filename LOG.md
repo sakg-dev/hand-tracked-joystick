@@ -163,3 +163,14 @@ I hadn;t written the logic yet, but for switching inventory, i would be using mo
 This took 2 attempts to be done, this log is for successful attempt.. So at first i worked on gesture_mapper.py where i wrote the logics to do these: First made a new global state as last_horizontal_move_for_inventory that stores the side and time of last time we moved to left or right and their i added a dummy keyboard.append as I wanted this move to count as busy not rest post. Then in b4 setting last_rest_pose_time, i check if current rest pose time and last rest pose time if under 1 second and between them, there is time of last horizontal move, it means user is trying to switch inventory then check the side and append in current_mouse_btn_types. In actions_taker.py, i check if prev_inventory or next_inventory is in the arr, if yes do mouse.scroll (1 or -1 based on side). thats it!
 
 Now we have to do a much harder one: Rotation, as we have to rotate in all side.. And recently i got to know, for this we will be moving cursor and we also need to move cursor for like trading with villager or managing inventory(need to hold the items as well), but lets firstly focus on simpler rotation..
+
+-----------
+
+So now rotation hehe, must be hard but lets decide the gesture or trigger for it first. So ig the rotating the hand would convinient, but sometimes i dont want it to be so slow neither so fast, wt abt setting the speed of rotation manually? ig it would be a good idea, in off hand we can make the pinch like as we do for volume control for keeping the speed and we can move hand left right, up down for rotation. it will be just keep rotating until the hand doesnt some in normal pose again. 
+For these all  ig i will have to do something with vector estimation kinda thingy. imma cmplete linear algebra fast and practise it lil bit.
+we will be doing the pinch thingy in off hand for sensitivity and far means more and close means less. and the other fingers must be warped so as to it will be differ than keeping hand in rest.
+
+Btw we can also do rotation through hand pointing through a finger at direction, that would be easier (and might be better). Lets firstly try upper one then this will be as second option,,
+
+-----------
+
