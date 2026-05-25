@@ -174,3 +174,13 @@ Btw we can also do rotation through hand pointing through a finger at direction,
 
 -----------
 
+till now we implemented the palm orientation detection only, here's how:
+
+1st try: as i did in main.py, i set the rest pose byt  thumb up from off hand then i check if len of hand landmark if more than 0 and rest pose exists, then i get pinky and wrist finger's current value  and rest_pose_value. i create a var for pinky and wrist diff and subtract current z value of that ldm from rest value z value to get get the diff. then by sme trial and err i check if its between some values so top/bottom or else left/right. though it had 1 mmajor drawback: it wasn't that accurate ngl, sometime wrist diff tells correct fr top bottom but sometimes it caalcullated for left right and vice versa for pinky... i also tried using other ldm like middle finger mcp, but it wasn't that accurate at all..
+
+2nd try: so i had this idea like what if we get a line start from pinky to the wrist and we find its top perpendicular line then we can see its direction vector and figure out the rotation byt try andd err. i created a direction vector first from wrist to pinky through subtracting coords then i saw this formula to rotate line  90deg: (-dy, dx) in left side.
+i made perpendicular_ldm_left(a normalized ldm), then put this new values(-dy,dx) as x,y and found the average z. then i appended it in rest pose then in tools.py, made some changed to visualize this dot. ot was smthing working better visually but it wasn;t that accurate too.
+
+thats when i got [this](https://stackoverflow.com/questions/72003980/can-we-get-the-orientation-of-the-hand-from-mediapipes-palm-detector), it was exactly what i wanted(though had some mistakes like subtracting NormalizedLandmark using numpy rather extracting coords in list etc etc):it uses world landmarks instead of simple hand ldm, it creates a numpy array of 3 ldms: wrist, index mcp, and pinky mcp(to create a plain that cvrs the palm), then from those points, it makes 2 direction vectors: from wrist to pinky and pinky to inde. then it finds the cross product of these dir vectors(that lies in our plain), and the cross producct return a normal vector perpendicular to both dir vectors and we normalize it to be a unit vector(length 1), then create a new NormalizedLandmark and assign the values as we got then append in rest_pose for visualizing and using if-else for finding right/left and up/down, and surprisingly, it ws much more stable and accurate!
+
+Though in future i might use all MCPs for better result. and since different user might keep their hand differently, in future we shouldcan select and set values in beginning in future.
