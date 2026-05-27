@@ -83,10 +83,23 @@ class Action_taker:
                 self._hold_press(btn)
             if "high_cps" in new_key_types:
                 self._cps_start(btn)
+
             if "prev_inventory" in new_key_types:
                 self.mouse.scroll(0, 1)
-            if "next_inventory" in new_key_types:
+            elif "next_inventory" in new_key_types:
                 self.mouse.scroll(0, -1)
+
+            # we need to run them in a seperate thread as we doin in cps, should we share the same thread for all work??
+            if "up_rotate" in new_key_types:
+                print("up rotated")
+            elif "down_rotate" in new_key_types:
+                print("down rotated")
+
+            if "left_rotate" in new_key_types:
+                print("left rotated")
+            elif "right_rotate" in new_key_types:
+                print("right rotated")
+
         self.prev_mouse_btn_types = current_mouse_btn_types
 
     def take_action(self, current_keys, current_mouse_btn_types, is_off_hand_palm_open):

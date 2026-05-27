@@ -22,11 +22,22 @@ def get_hand_landmarks_style(color):
 def draw_hand_landmarks(rgb_img, hand_landmarks_list, rest_pose_ldms):
     annoted_img = np.copy(rgb_img)
 
-    if len(rest_pose_ldms) > 0:  # All parts of hand must be visible
+    for hand_landmarks in hand_landmarks_list:
+        drawing_utils.draw_landmarks(
+            image=annoted_img,
+            landmark_list=hand_landmarks,
+            connections=vision.HandLandmarksConnections.HAND_CONNECTIONS,
+            landmark_drawing_spec=drawing_styles.get_default_hand_landmarks_style(),
+            connection_drawing_spec=drawing_styles.get_default_hand_connections_style()
+        )
+
+    if len(rest_pose_ldms) == 21:  # All parts of hand must be visible
         drawing_utils.draw_landmarks(
             image=annoted_img,
             landmark_list=rest_pose_ldms,
-            landmark_drawing_spec=get_hand_landmarks_style((255, 0, 0))
+            connections=vision.HandLandmarksConnections.HAND_CONNECTIONS,
+            landmark_drawing_spec=get_hand_landmarks_style((255, 0, 0)),
+            connection_drawing_spec=drawing_styles.get_default_hand_connections_style()
         )
 
     annoted_img_bgr = cv2.cvtColor(annoted_img, cv2.COLOR_RGB2BGR)

@@ -18,12 +18,10 @@ class Joystick:
         self.fps = Fps()
 
     def prep_img(self, bgr_img):
-        """Takes bgr image and return flipped and mediapipe ready rgb img"""
-        flipped_frame = cv2.flip(bgr_img, 1)
-        img_with_fps = self.fps.set_fps_to_img(flipped_frame, (20, 40), (255, 100, 255))
+        """Takes bgr image and return mediapipe ready rgb img"""
         rgb_frame = mp.Image(
             image_format=mp.ImageFormat.SRGB,
-            data=cv2.cvtColor(img_with_fps, cv2.COLOR_BGR2RGB)
+            data=cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
         )
         return rgb_frame
 
@@ -32,6 +30,7 @@ class Joystick:
 
         gesture_mapped = self.gesture_mapper.map(
             hlm,
+            hwlm,
             handedness,
             gestures,
             self.action_taker
@@ -50,7 +49,10 @@ class Joystick:
             rest_pose_ldms
         )
 
-        resized_result_img = cv2.resize(result_img, (WINDOW_WIDTH, WINDOW_HEIGHT))
+        flipped_frame = cv2.flip(result_img, 1)
+        img_with_fps = self.fps.set_fps_to_img(flipped_frame, (20, 40), (255, 100, 255))
+
+        resized_result_img = cv2.resize(img_with_fps, (WINDOW_WIDTH, WINDOW_HEIGHT))
         cv2.namedWindow(WIN_NAME, cv2.WINDOW_AUTOSIZE | cv2.WINDOW_GUI_NORMAL)
         cv2.imshow(WIN_NAME, resized_result_img)
 

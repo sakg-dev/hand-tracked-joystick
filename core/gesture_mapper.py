@@ -7,7 +7,7 @@ from config.constants import OFF_HAND, MAIN_HAND, LDM_SET_GESTURE, QUIT_GESTURE,
 import cv2
 from pynput.keyboard import Key
 import time
-
+import numpy as np
 
 class Gesture_mapper:
     """Takes Hand landmarks and outputs all actions that has to be taken."""
@@ -46,6 +46,7 @@ class Gesture_mapper:
             return
 
         main_hand_ldm = self.hlm[handedness.index(MAIN_HAND)]
+        main_hand_wldm = self.hwlm[handedness.index(MAIN_HAND)]
         current_time = time.time()
 
         # ---------Keyboard------------------
@@ -142,8 +143,28 @@ class Gesture_mapper:
             elif thumb_and_index_pinch:
                 self.current_mouse_btn_types.append("high_cps")
 
-    def map(self, hlm, handedness, gestures, action_taker):
+        points = np.asarray([
+                [main_hand_wldm[0].x,main_hand_wldm[0].y,main_hand_wldm[0].z], 
+                [main_hand_wldm[5].x,main_hand_wldm[5].y,main_hand_wldm[5].z], 
+                [main_hand_wldm[17].x,main_hand_wldm[17].y,main_hand_wldm[17].z]
+            ],
+            dtype=np.float32
+        )
+        normal_vector = -np.cross(points[2] - points[0], points[1] - points[2]) # negative as its main hand
+        normal_vector /= np.linalg.norm(normal_vector)
+        x, y, z = list(map(lambda num:num.item(), normal_vector))
+        if y < -0.3:
+            self.current_mouse_btn_types.append("up_rotate")
+        elif y > 0.4:
+            self.current_mouse_btn_types.append("down_rotate")
+        if x > 0.8:
+            self.current_mouse_btn_types.append("left_rotate")
+        elif x < 0.2:
+            self.current_mouse_btn_types.append("right_rotate")
+
+    def map(self, hlm, hwlm, handedness, gestures, action_taker):
         self.hlm = hlm
+        self.hwlm = hwlm
         self.handedness = list(map(lambda hd: hd[0].category_name, handedness))
         self.gestures = gestures
 

@@ -8,7 +8,6 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks import python
 import numpy as np
 import cv2
-import random
 
 cam = cv2.VideoCapture(0)
 
@@ -33,7 +32,7 @@ while True:
     success, frame = cam.read()
 
     # flipped_frame = cv2.flip(frame, 1)
-    flipped_frame = frame # for laptop
+    flipped_frame = frame
 
     rgb_frame = mp.Image(
         mp.ImageFormat.SRGB,
@@ -44,17 +43,8 @@ while True:
     gestures, handedness, hlm, hwlm = r.gestures, r.handedness, r.hand_landmarks, r.hand_world_landmarks
     handedness = list(map(lambda h:h[0].category_name, handedness))
 
-    # if OFF_HAND in handedness:
-    #     idx = handedness.index(OFF_HAND)
-    #     gesture = gestures[idx][0].category_name
-
-    #     if gesture == SET_REST_POSE_GESTURE:
-    #         # print("Set rest pose")
-    #         if MAIN_HAND in handedness:
-    #             rest_pose_ldms = hlm[handedness.index(MAIN_HAND)]
-
     new_ldm = None
-    if len(hwlm) > 0: # and len(rest_pose_ldms) == 21
+    if len(hwlm) > 0:
         wlms = hwlm[0]
         lms = hlm[0]
         points = np.asarray([
@@ -66,6 +56,7 @@ while True:
         )
         normal_vector = np.cross(points[2] - points[0], points[1] - points[2])
         if MAIN_HAND in handedness:
+            # print("main hand")
             normal_vector *= -1
         normal_vector /= np.linalg.norm(normal_vector)
         new_ldm = mp.tasks.components.containers.NormalizedLandmark()
@@ -80,45 +71,6 @@ while True:
             print("left")
         elif x < 0.2:
             print("right")
-
-        # Finding perpendicular of line, and finding the rotatiion by that 
-        # if MAIN_HAND in handedness:
-        #     lms = hlm[handedness.index(MAIN_HAND)]
-        #     pinky, wrist = lms[17], lms[0]
-        #     dx = pinky.x - wrist.x
-        #     dy = pinky.y - wrist.y
-        #         # "left": (-dy, dx),
-        #         # "right": (dy, -dx)
-        #     perpendicular_ldm_left = mp.tasks.components.containers.NormalizedLandmark()
-        #     perpendicular_ldm_left.x = -dy
-        #     perpendicular_ldm_left.y = dx
-        #     perpendicular_ldm_left.z = (pinky.z + wrist.z) / 2
-        #     rest_pose_ldms = [perpendicular_ldm_left]
-            
-        # top/bottom working well but left/right is also getting active on top/bottom, need other ldms..
-        # lms = hlm[0]
-        # pinky, middle_finger_mcp = round(lms[20].z,4), round(lms[9].z,4)
-        # rest_pinky, rest_middle_finger_mcp = round(rest_pose_ldms[20].z,4), round(rest_pose_ldms[9].z,4)
-        # if abs(rest_middle_finger_mcp -  middle_finger_mcp) > 0.02:
-        #     print("top/bottom")
-        # print(abs(rest_pinky -  pinky))
-        # if abs(rest_pinky -  pinky) > 0.03:
-        #     print("left/right",end = "\n" * random.randint(1,3))
-        # print(abs(rest_middle_finger_mcp -  middle_finger_mcp))
-        # print(abs(rest_pinky -  pinky))
-        # print("\n\n\n\n\n")
-
-        # lms = hlm[0]
-        # pinky, wrist = lms[17], lms[0]
-        # rest_pinky,rest_wrist = rest_pose_ldms[17], rest_pose_ldms[0]
-        # pinky_diff = round(rest_pinky.z - pinky.z, 3)
-        # wrist_diff = round((rest_wrist.z - wrist.z)*100000, 3)
-        # rand = "\n" * random.randint(1,3)
-        # if abs(wrist_diff) > 0.01:
-        #     print("Top and Bottom",end=rand)
-        # else:
-        #     if abs(pinky_diff) > 0.01:
-        #         print("Left and right",end=rand)
 
     result_img = draw_hand_landmarks(rgb_frame.numpy_view(), hlm, rest_pose_ldms)
     if new_ldm:

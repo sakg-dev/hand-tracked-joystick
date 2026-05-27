@@ -1,6 +1,6 @@
 # Hands
-MAIN_HAND = "Left"
-OFF_HAND = "Right"
+MAIN_HAND = "Right"
+OFF_HAND = "Left"
 
 # Gestures
 LDM_SET_GESTURE = "Thumb_Up"
