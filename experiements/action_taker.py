@@ -6,7 +6,7 @@ from tools import randomize_int
 from config.constants import LEFT_CPS, RIGHT_CPS, CPS_MAX_RAND_FACTOR
 from pynput.keyboard import Controller as kController
 from pynput.mouse import Button, Controller as mController
-from time import sleep, time
+from time import sleep
 import threading
 
 
@@ -17,22 +17,22 @@ class Action_taker:
 
         self.prev_keys = []
         self.prev_mouse_btn_types = []
-        
-        self.is_thread_running = True
         self.thread_tasks = []
-        self.thread = threading.Thread(target=self._thread_work)
-        self.thread.start()
-# ---------not working here, check in pc..------------------
+        self.prev_thread_tasks = []
+    
     def _thread_work(self):
-        while self.is_thread_running:
-            if len(self.thread_tasks) > 0:
-                current = time()
-                for t in self.thread_tasks:
-                    task_name, func, args, sleep_interval, last_ran = t["task_name"], t["func"], t["args"], t["sleep_interval"], t["last_ran"]
-                    if current - last_ran > sleep_interval:
-                        func(*args)
-                        t["last_ran"] = current
-                    
+        tasks = self.thread_tasks
+        if len(tasks) > 0:
+            for task in tasks:
+                task_name, func, args = task["task_name"], task["func"], task["args"]
+                if task_name not in self.prev_thread_tasks:
+                    func(args)
+            self.prev_thread_tasks = list(map(lambda t: t["task_name"], tasks))
+        else:
+            self.prev_thread_tasks = []
+            # task_name, 
+            # if 
+
 
     def _keyboard(self):
         prev_keys = self.prev_keys
@@ -49,8 +49,10 @@ class Action_taker:
 
         self.prev_keys = current_keys
 
-    def _cps_loop(self, btn):
-        self.mouse.click(btn)
+    def _cps_loop(self, ms_per_click, btn):
+        while True:
+            self.mouse.click(btn)
+            sleep(randomize_int(ms_per_click, CPS_MAX_RAND_FACTOR)/1000)
 
     def _hold_press(self, btn):
         self.mouse.press(btn)
@@ -60,18 +62,14 @@ class Action_taker:
 
     def _cps_start(self, btn):
         cps = LEFT_CPS if self.is_off_hand_palm_open == False else RIGHT_CPS
-        sleep_interval = randomize_int(int(1000/cps), CPS_MAX_RAND_FACTOR)/1000
         self.thread_tasks.append({
             "task_name": "cps",
             "func": self._cps_loop,
-            "args": [btn],
-            "sleep_interval": randomize_int(sleep_interval, CPS_MAX_RAND_FACTOR)/1000,
-            "last_ran": 0
+            "args": [int(1000/cps), btn]
         })
 
     def _cps_end(self):
-        pass
-        # self.thread_tasks = [t for t in self.thread_tasks if t["task_name"]!= "cps"]
+        self.thread_tasks = [t for t in self.thread_tasks if t["task_name"]!= "cps"]
 
     def _mouse(self):
         btn = Button.left if self.is_off_hand_palm_open == False else Button.right

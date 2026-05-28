@@ -58,3 +58,14 @@
 #     "b":"Hi"
 # }
 # print(None in list(a.values()))
+
+# a = [5]
+# def f(i):
+#     print(i)
+# f(a)
+# f(*a)
+
+# a = [{"name":"sak"}]
+# for t in a:
+#     t["name"] = "sakgg"
+# print(a)
