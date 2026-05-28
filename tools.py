@@ -49,7 +49,7 @@ def is_above_threshold(threshold, val):
     return abs(val) > threshold
 
 
-def quit_and_release(keys, prev_mouse_btn_types, _cps_end):
+def quit_and_release(keys, prev_mouse_btn_types, _stop_thread):
     keyboard = kController()
     for key in keys:
         keyboard.release(key)
@@ -57,10 +57,9 @@ def quit_and_release(keys, prev_mouse_btn_types, _cps_end):
     # Mouse: Simple left and right press/release || high cps loop
     # Rn user will never do right click b4 releasing as we need to keep palm open of off hand for right click but for closing we need to do down thumbsup, it means we have to check for left hold click and high cps
     mouse = mController()
+    _stop_thread()
     if "hold" in prev_mouse_btn_types:
         mouse.release(Button.left)
-    if "high_cps" in prev_mouse_btn_types:
-        _cps_end()
 
     raise RuntimeError("Quitting")
 
