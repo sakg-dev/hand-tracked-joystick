@@ -21,18 +21,24 @@ class Action_taker:
         self.is_thread_running = True
         self.thread_tasks = []
         self.thread = threading.Thread(target=self._thread_work)
+        self.thread_lowest_task_sleep_interval = 0.001
         self.thread.start()
 
     def _thread_work(self):
         # sleep interval is not random everytime, make a function to radomise value based on given values and change it on every time you do last_ran assign
         while self.is_thread_running:
             current = time()
-            for t in self.thread_tasks:
-                task_name, func, args, sleep_interval, last_ran = t["task_name"], t["func"], t["args"], t["sleep_interval"], t["last_ran"]
-                if current - last_ran > sleep_interval:
-                    # print(sleep_interval)
-                    func(*args)
-                    t["last_ran"] = current
+            if len(self.thread_tasks) > 0:
+                self.thread_lowest_task_sleep_interval = min(list(map(lambda t: t["sleep_interval"], self.thread_tasks)))
+                for t in self.thread_tasks:
+                    task_name, func, args, sleep_interval, last_ran = t["task_name"], t["func"], t["args"], t["sleep_interval"], t["last_ran"]
+                    if current - last_ran >= sleep_interval:
+                        # print(sleep_interval)
+                        func(*args)
+                        t["last_ran"] = current
+            else:
+                self.thread_lowest_task_sleep_interval = 0.001 # in case it has been modifed..
+            sleep(self.thread_lowest_task_sleep_interval)
                     
 
     def _keyboard(self):
@@ -151,7 +157,6 @@ class Action_taker:
             # we need to run them in a seperate thread as we doin in cps, should we share the same thread for all work??
             if "up_rotate" in new_key_types:
                 self._rotate("up")
-                print("up rotated")
             elif "down_rotate" in new_key_types:
                 self._rotate("down")
             if "left_rotate" in new_key_types:

@@ -197,3 +197,10 @@ So this took really lotta effort, here's what happened: So since beginning i wan
 By this way we were running a single while loop in thread, every task has their own last_ran and sleep_interval, the thread checks elapsed time and if its larger than sleep interval, run it and change last_ran and continue this loop!
 
 though it has a problem: we are running while loop everytime, and doing checks and we are doing it even though tasks are 0, this thing is cpu intensive that my fps drops from 20 to ~5.. We gotta solve it afap
+
+-----------
+
+So i implemented one of several ideas i had to make it efficient and it worked! The problem was, we were running while loop at its speed(as much cpu can handle), but our task's sleep interval is too large than its speed, hence most of the time, it was running without any reason or as waste. So i though instead of running it at its speed, what if we run it at our tasks' lowest speed, by this, we will be able to achieve the elepsed time less or equal than all tasks' sleep interval and we can reduce lots of waste loop! I created a state var(with 0.001 as default val) for action taker class as thats where our thread thingy is, then in loop, if there are tasks, i find one with smallest sleep interval and set the state val as its val! and in last of while loop, i run a sleep.
+
+there are many more ways to optimize it! but for now its enough.
+finally we have done rotation, now we should focus on inventory one, this one must be hard as we need to make it fast but accurate on the same time but how can we do that when we are relying on hand gesture and there is 20+ boxes??
