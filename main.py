@@ -4,7 +4,7 @@ from tools import draw_hand_landmarks
 from core.camera import Camera
 from core.gesture_recognizer import Gesture_recognizer
 from core.fps import Fps
-from config.constants import WIN_NAME, WINDOW_HEIGHT, WINDOW_WIDTH
+from config.constants import WIN_NAME, WINDOW_HEIGHT, WINDOW_WIDTH, OFF_HAND
 from core.gesture_mapper import Gesture_mapper
 from core.actions_taker import Action_taker
 
@@ -40,14 +40,23 @@ class Joystick:
             current_keys, current_mouse_btn_types, is_off_hand_palm_open, rest_pose_ldms = gesture_mapped
             self.action_taker.take_action(current_keys, current_mouse_btn_types, is_off_hand_palm_open)
 
-        return [rest_pose_ldms, hlm]
+        return [rest_pose_ldms, hlm, handedness]
     
-    def process_final_img_and_show(self,rgb_frame,hlm,rest_pose_ldms):
+    def process_final_img_and_show(self,rgb_frame,hlm,rest_pose_ldms, handedness):
         result_img = draw_hand_landmarks(
             rgb_frame.numpy_view(),
             hlm,
             rest_pose_ldms
         )
+        # for rotation speed..
+        if self.gesture_mapper.is_rotate_speed_changing:
+            handedness_list = list(map(lambda h:h[0].category_name,handedness))
+            if OFF_HAND in handedness_list:
+                off_hand_ldm = hlm[handedness_list.index(OFF_HAND)]
+                h,w,_=result_img.shape
+                thumb_x,thumb_y = [int(off_hand_ldm[4].x*w),int(off_hand_ldm[4].y*h)]
+                index_x,index_y = [int(off_hand_ldm[8].x*w),int(off_hand_ldm[8].y*h)]
+                result_img = cv2.line(result_img, (thumb_x,thumb_y),(index_x,index_y), (255,0,0),5)
 
         flipped_frame = cv2.flip(result_img, 1)
         img_with_fps = self.fps.set_fps_to_img(flipped_frame, (20, 40), (255, 100, 255))
@@ -61,8 +70,8 @@ class Joystick:
             try:
                 frame = self.camera.read()
                 rgb_frame = self.prep_img(frame)
-                rest_pose_ldms, hlm = self.detect_and_process_gesture(rgb_frame)
-                self.process_final_img_and_show(rgb_frame, hlm, rest_pose_ldms)
+                rest_pose_ldms, hlm, handedness = self.detect_and_process_gesture(rgb_frame)
+                self.process_final_img_and_show(rgb_frame, hlm, rest_pose_ldms, handedness)
                 cv2.waitKey(1)
             except:
                 print("Quitting")

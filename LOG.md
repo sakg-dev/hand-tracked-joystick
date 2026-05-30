@@ -204,3 +204,7 @@ So i implemented one of several ideas i had to make it efficient and it worked! 
 
 there are many more ways to optimize it! but for now its enough.
 finally we have done rotation, now we should focus on inventory one, this one must be hard as we need to make it fast but accurate on the same time but how can we do that when we are relying on hand gesture and there is 20+ boxes??
+
+-----------
+
+Its a quick feature i wanted to add, which is rotation speed, we can change it by doing a thumb and index finger pinch in off hand and then it will be computing the distance between those fingers, close means less speed, far means more speed, you can test out and for savinng just get your off handd out of the screen!

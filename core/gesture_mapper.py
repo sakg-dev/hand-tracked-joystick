@@ -18,11 +18,14 @@ class Gesture_mapper:
         self.last_horizontal_move_for_invtentory = {"time": None, "side": None}
         self.last_rest_pose_time = None
         self.sprint = False
+        self.is_rotate_speed_changing = False
 
     def _off_hand_gesture_actions(self, action_taker):
         handedness = self.handedness
 
         if OFF_HAND not in handedness:
+            if self.is_rotate_speed_changing:
+                self.is_rotate_speed_changing = False
             return
 
         gesture = self.gestures[handedness.index(OFF_HAND)][0].category_name
@@ -38,6 +41,31 @@ class Gesture_mapper:
                 action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._stop_thread)
         elif gesture == RIGHT_CLICK_GESTURE:
             self.is_off_hand_palm_open = True
+
+        off_hand_ldm = self.hlm[handedness.index(OFF_HAND)]
+        thumb = off_hand_ldm[4]
+        index = off_hand_ldm[8]
+
+        thumb_x, thumb_y = int(
+            thumb.x*WINDOW_WIDTH), int(thumb.y*WINDOW_HEIGHT)
+        index_x, index_y = int(
+            index.x*WINDOW_WIDTH), int(index.y*WINDOW_HEIGHT)
+
+        thumb_and_index_distance = cv2.norm(
+            (thumb_x, thumb_y), (index_x, index_y)
+        )
+        if self.is_rotate_speed_changing == False:
+            thumb_and_index_pinch = thumb_and_index_distance <= PINCH_THRESHOLD
+            if thumb_and_index_pinch:
+                # print(action_taker.rotate_speed)
+                # print("activating_pinch")
+                self.is_rotate_speed_changing = True
+        else:
+            smallest = 5
+            action_taker.rotate_speed = round(thumb_and_index_distance/smallest,1)
+            # round((largest-smallest)/thumb_and_index_distance,1)
+            
+
 
     def _main_hand_gesture_actions(self):
         handedness = self.handedness

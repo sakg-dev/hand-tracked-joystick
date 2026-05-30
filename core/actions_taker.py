@@ -21,6 +21,7 @@ class Action_taker:
         self.is_thread_running = True
         self.thread_tasks = []
         self.thread = threading.Thread(target=self._thread_work)
+        self.rotate_speed = 1
         self.thread_lowest_task_sleep_interval = 0.001
         self.thread.start()
 
@@ -83,7 +84,7 @@ class Action_taker:
         self.thread.join()
     
     def _rotate(self, side):
-        val = 5
+        val = self.rotate_speed
         x = 0
         y = 0
         if side == "left":
