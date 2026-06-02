@@ -208,3 +208,14 @@ finally we have done rotation, now we should focus on inventory one, this one mu
 -----------
 
 Its a quick feature i wanted to add, which is rotation speed, we can change it by doing a thumb and index finger pinch in off hand and then it will be computing the distance between those fingers, close means less speed, far means more speed, you can test out and for savinng just get your off handd out of the screen!
+
+-----------
+
+So i wanna make it general purpose, like its not only about inventory but whole inventory mode, means everything related to it. like trading with vilager, chest, personal inventory, shulker, etc etc. I just dont want a rectangle thing one can draw and move cursor, bcz itt needs to be so precize  then, which it is not.. Hence i want such system, which can work on any inventory, but not like only cursor, but imagine, we identify wt kind of inventory it is and make grid related to that inventory, and then we dont need to mae precise movemtns, as our cursor will only be moving in grids(cells). idk how we would be detecting but ig every type of inventory has unique ratio of x and y, can't we just slide from like left top to bottom right and identify??
+
+But i have a feeling it would take too much time hence i am sticking with that cursor one for now, we might do above one later if needed..
+
+-----------
+
+alrit idk why it took so much time maybe as i got addicted to minecraft and lil bit or dippress nowadays or whateva..
+So rn i have made 2 modes: movement and inventory, all things we did prev was movement and now we have made inventory where i haven't added anyhting but thinking to make a simple cursor that follows my finger. we might do more but lets do it first
