@@ -21,6 +21,8 @@ class Gesture_mapper:
         self.is_rotate_speed_changing = False
         self.mode_change_continue = False
         self.mode = "movement"
+        self.cursor_move = False
+        self.prev_index_finger_tip_pos = None
 
     def _off_hand_gesture_actions(self, action_taker):
         handedness = self.handedness
@@ -77,8 +79,12 @@ class Gesture_mapper:
                 self.mode_change_continue = True
                 self.mode = "movement"
                 print("switched to movemet mode")
-            elif gesture == QUIT_GESTURE:
-                quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._stop_thread)
+            # elif gesture == QUIT_GESTURE: # doin this for disabling cursor move fn.
+            #     quit_and_release(action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._stop_thread)
+            elif gesture == "Thumb_Up":
+                self.cursor_move = True
+            elif gesture == "Thumb_Down":
+                self.cursor_move = False
 
 
     def _main_hand_gesture_actions(self):
@@ -86,12 +92,13 @@ class Gesture_mapper:
         if MAIN_HAND not in handedness:
                 return
 
+        main_hand_ldm = self.hlm[handedness.index(MAIN_HAND)]
+
         if self.mode == "movement":
             rest_pose_ldms = self.rest_pose_ldms
             if len(rest_pose_ldms) == 0:
                 return
 
-            main_hand_ldm = self.hlm[handedness.index(MAIN_HAND)]
             main_hand_wldm = self.hwlm[handedness.index(MAIN_HAND)]
             current_time = time.time()
 
@@ -208,7 +215,26 @@ class Gesture_mapper:
             elif x < 0.2:
                 self.current_mouse_btn_types.append("right_rotate")
         elif self.mode == "inventory":
-            pass
+            if self.cursor_move:
+                current_index_finger_tip_pos = main_hand_ldm[8]
+                if self.prev_index_finger_tip_pos:
+                    diff_from_prev_x = current_index_finger_tip_pos.x - self.prev_index_finger_tip_pos.x
+                    diff_from_prev_y = current_index_finger_tip_pos.y - self.prev_index_finger_tip_pos.y
+                    if abs(diff_from_prev_x) > 0.01:
+                        if diff_from_prev_x < 0:
+                            self.current_mouse_btn_types.append("right_rotate")
+                        else:
+                            self.current_mouse_btn_types.append("left_rotate")
+                    if abs(diff_from_prev_y) > 0.01:
+                        if diff_from_prev_y < 0:
+                            self.current_mouse_btn_types.append("up_rotate")
+                        else:
+                            self.current_mouse_btn_types.append("down_rotate")
+                    # print(current_index_finger_tip_pos.y - self.prev_index_finger_tip_pos.y)
+                    # find diff and do things
+                    # print("Following finger")
+                self.prev_index_finger_tip_pos = current_index_finger_tip_pos
+                
 
     def map(self, hlm, hwlm, handedness, gestures, action_taker):
         self.hlm = hlm
