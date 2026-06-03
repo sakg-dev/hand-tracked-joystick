@@ -43,7 +43,6 @@ class Joystick:
         return [rest_pose_ldms, hlm, handedness]
     
     def process_final_img_and_show(self,rgb_frame,hlm,rest_pose_ldms, handedness):
-        hlm = hlm if self.gesture_mapper.mode == "movement" else []
         result_img = draw_hand_landmarks(
             rgb_frame.numpy_view(),
             hlm,

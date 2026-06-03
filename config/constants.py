@@ -6,7 +6,6 @@ OFF_HAND = "Left"
 LDM_SET_GESTURE = "Thumb_Up"
 QUIT_GESTURE = "Thumb_Down"
 RIGHT_CLICK_GESTURE = "Open_Palm"
-CHANGE_MODE_GESTURE = "ILoveYou"
 
 # Display Window
 WIN_NAME = "gameee"

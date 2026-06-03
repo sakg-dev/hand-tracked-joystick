@@ -15,6 +15,5 @@ Tasks:
 - [x] Sprint
 - [x] Switching inventory(1-9)
 - [x] Rotation & Rotation speed changing
-- [ ] Move cursor for like trading with villager, as well as hold/release and click items
 - [ ] Normalize the hand size and everything like threashold etc
 - [ ] Make it confortable and kind of accurate, faster and less oopsy

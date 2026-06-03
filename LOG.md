@@ -219,3 +219,7 @@ But i have a feeling it would take too much time hence i am sticking with that c
 
 alrit idk why it took so much time maybe as i got addicted to minecraft and lil bit or dippress nowadays or whateva..
 So rn i have made 2 modes: movement and inventory, all things we did prev was movement and now we have made inventory where i haven't added anyhting but thinking to make a simple cursor that follows my finger. we might do more but lets do it first
+
+-----------
+
+So actualy after implementing the basic version of inventory mode, i realized how hard would it be to navigate with index finger tip, and those rotations were working and was more comfortable, hence for now(bedwar), it works, lets focus on making it more better though later we will hae to work on inventory mode..
