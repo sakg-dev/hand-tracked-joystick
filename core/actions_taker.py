@@ -28,15 +28,15 @@ class Action_taker:
     def _thread_work(self):
         # sleep interval is not random everytime, make a function to radomise value based on given values and change it on every time you do last_ran assign
         while self.is_thread_running:
-            current = time()
+            current_time = time()
             if len(self.thread_tasks) > 0:
                 self.thread_lowest_task_sleep_interval = min(list(map(lambda t: t["sleep_interval"], self.thread_tasks)))
                 for t in self.thread_tasks:
                     task_name, func, args, sleep_interval, last_ran = t["task_name"], t["func"], t["args"], t["sleep_interval"], t["last_ran"]
-                    if current - last_ran >= sleep_interval:
+                    if current_time - last_ran >= sleep_interval:
                         # print(sleep_interval)
                         func(*args)
-                        t["last_ran"] = current
+                        t["last_ran"] = current_time
             else:
                 self.thread_lowest_task_sleep_interval = 0.001 # in case it has been modifed..
             sleep(self.thread_lowest_task_sleep_interval)
@@ -67,7 +67,7 @@ class Action_taker:
         self.mouse.release(btn)
 
     def _cps_start(self, btn):
-        cps = LEFT_CPS if self.is_off_hand_palm_open == False else RIGHT_CPS
+        cps = LEFT_CPS if self.enable_right_click == False else RIGHT_CPS
         self.thread_tasks.append({
             "task_name": "cps",
             "func": self._cps_loop,
@@ -108,7 +108,7 @@ class Action_taker:
         self.thread_tasks = [t for t in self.thread_tasks if t["task_name"]!= f"{side}_rotate"]
 
     def _mouse(self):
-        btn = Button.left if self.is_off_hand_palm_open == False else Button.right
+        btn = Button.left if self.enable_right_click == False else Button.right
         prev_mouse_btn_types = self.prev_mouse_btn_types
         current_mouse_btn_types = self.current_mouse_btn_types
 
@@ -155,7 +155,6 @@ class Action_taker:
             elif "next_inventory" in new_key_types:
                 self.mouse.scroll(0, -1)
 
-            # we need to run them in a seperate thread as we doin in cps, should we share the same thread for all work??
             if "up_rotate" in new_key_types:
                 self._rotate("up")
             elif "down_rotate" in new_key_types:
@@ -167,9 +166,9 @@ class Action_taker:
 
         self.prev_mouse_btn_types = current_mouse_btn_types
 
-    def take_action(self, current_keys, current_mouse_btn_types, is_off_hand_palm_open):
+    def take_action(self, current_keys, current_mouse_btn_types, enable_right_click):
         self.current_keys = current_keys
-        self.is_off_hand_palm_open = is_off_hand_palm_open
+        self.enable_right_click = enable_right_click
         self.current_mouse_btn_types = current_mouse_btn_types
 
         self._keyboard()

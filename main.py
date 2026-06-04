@@ -37,8 +37,8 @@ class Joystick:
         )
         rest_pose_ldms = []
         if gesture_mapped:
-            current_keys, current_mouse_btn_types, is_off_hand_palm_open, rest_pose_ldms = gesture_mapped
-            self.action_taker.take_action(current_keys, current_mouse_btn_types, is_off_hand_palm_open)
+            current_keys, current_mouse_btn_types, enable_right_click, rest_pose_ldms = gesture_mapped
+            self.action_taker.take_action(current_keys, current_mouse_btn_types, enable_right_click)
 
         return [rest_pose_ldms, hlm, handedness]
     
@@ -73,8 +73,8 @@ class Joystick:
                 rest_pose_ldms, hlm, handedness = self.detect_and_process_gesture(rgb_frame)
                 self.process_final_img_and_show(rgb_frame, hlm, rest_pose_ldms, handedness)
                 cv2.waitKey(1)
-            except:
-                print("Quitting")
+            except Exception as e:
+                print(e)
                 break
         self.camera.release()
         cv2.destroyAllWindows()

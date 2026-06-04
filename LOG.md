@@ -223,3 +223,8 @@ So rn i have made 2 modes: movement and inventory, all things we did prev was mo
 -----------
 
 So actualy after implementing the basic version of inventory mode, i realized how hard would it be to navigate with index finger tip, and those rotations were working and was more comfortable, hence for now(bedwar), it works, lets focus on making it more better though later we will hae to work on inventory mode..
+
+-----------
+
+lets make it perfect now!
+First step must be to add breakpoint in all values which might change for normalize as well as hardcoded val.

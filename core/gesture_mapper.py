@@ -40,7 +40,7 @@ class Gesture_mapper:
             quit_and_release(
                 action_taker.prev_keys, action_taker.prev_mouse_btn_types, action_taker._stop_thread)
         elif gesture == RIGHT_CLICK_GESTURE:
-            self.is_off_hand_palm_open = True
+            self.enable_right_click = True
 
         off_hand_ldm = self.hlm[handedness.index(OFF_HAND)]
         thumb = off_hand_ldm[4]
@@ -57,13 +57,10 @@ class Gesture_mapper:
         if self.is_rotate_speed_changing == False:
             thumb_and_index_pinch = thumb_and_index_distance <= PINCH_THRESHOLD
             if thumb_and_index_pinch:
-                # print(action_taker.rotate_speed)
-                # print("activating_pinch")
                 self.is_rotate_speed_changing = True
         else:
             smallest = 5
             action_taker.rotate_speed = round(thumb_and_index_distance/smallest,1)
-            # round((largest-smallest)/thumb_and_index_distance,1)
             
 
 
@@ -83,7 +80,7 @@ class Gesture_mapper:
         dx = rest_pose_center.x - main_hand_center.x
         dy = rest_pose_center.y - main_hand_center.y
         if is_above_threshold(LANDMARK_DELTA_THRESHOLD, dx):
-            current_side = "A" if dx > 0 else "D"
+            current_side = "D" if dx > 0 else "A"
             if abs(dx) < 0.1:
                 self.current_keys.append(Key.scroll_lock) # Pressing a useless key to make it busy..
                 lst_x_move = self.last_horizontal_move_for_invtentory
@@ -196,7 +193,7 @@ class Gesture_mapper:
         self.handedness = list(map(lambda hd: hd[0].category_name, handedness))
         self.gestures = gestures
 
-        self.is_off_hand_palm_open = False
+        self.enable_right_click = False
         self.current_keys = []
         self.current_mouse_btn_types = []
 
@@ -207,4 +204,4 @@ class Gesture_mapper:
 
         self._main_hand_gesture_actions()
 
-        return [self.current_keys, self.current_mouse_btn_types, self.is_off_hand_palm_open, self.rest_pose_ldms]
+        return [self.current_keys, self.current_mouse_btn_types, self.enable_right_click, self.rest_pose_ldms]
